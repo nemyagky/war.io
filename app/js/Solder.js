@@ -41,7 +41,7 @@ export class Solder {
       //    return true
       // }
 
-      let soldersShoutDist = 250
+      let soldersShoutDist = 150
       
       if (
          !(this.x - soldersShoutDist > armyMatrix.border.right ||
@@ -55,20 +55,19 @@ export class Solder {
          let j = this.y
 
 
-         for (let iteration = soldersShoutDist; iteration > 0; iteration-=10) {
-
+         for (let iteration = soldersShoutDist; iteration >= 0; iteration-=10) {
             i += Math.sin(toRad(this.rotate)) * 10;
             j += Math.cos(toRad(this.rotate)) * 10;
 
             if ( !armyMatrix[Round10(i)] ) continue;
 
             if ( armyMatrix[Round10(i)][Round10(j)] ) {
-               armyMatrix[Round10(i)][Round10(j)].hp -= 1
+               armyMatrix[Round10(i)][Round10(j)].hp -= 1001
                if ( armyMatrix[Round10(i)][Round10(j)].hp < 0 ) {
                   armyMatrix[Round10(i)][Round10(j)].x = 0
                   armyMatrix[Round10(i)][Round10(j)].alive = false
                }
-               break
+               break;
             } 
          }
 

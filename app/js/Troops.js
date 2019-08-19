@@ -9,11 +9,11 @@ export let Troops = new class Troops {
       let green = new Army()
       green.create({
          team: 'green',
-         rotate: 0,
+         rotate: 90,
          borders: {
-            startX: 300, 
+            startX: 0, 
             startY: 0, 
-            endX: 1000, 
+            endX: 300, 
             endY: 300
          }
       })
@@ -22,12 +22,12 @@ export let Troops = new class Troops {
       let red = new Army()
       red.create({
          team: 'red',
-         rotate: 180,
+         rotate: 270,
          borders: {
-            startX: 300, 
-            startY: 300, 
-            endX: 1000, 
-            endY: 500
+            startX: 500, 
+            startY: 0, 
+            endX: 800, 
+            endY: 300
          }
       })
       troops.push(red)
