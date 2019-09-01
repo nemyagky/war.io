@@ -1,4 +1,4 @@
-import {toRad, rand, getDistBetween2dots, Round10} from './functions'
+import {toRad, rand, getDistBetween2dots} from './functions'
 
 
 export class Solder {
@@ -10,38 +10,9 @@ export class Solder {
 
    shoot(armyMatrix) {
 
-      // На вход получает массив врагов в виде объекта {
-      //   X10: {
-      //      Y10: [солдат и его свойства],
-      //      Y20: [солдат и его свойства]
-      // },
-      //   X20: {
-      //      Y10: [солдат и его свойства],
-      //      Y20: [солдат и его свойства]
-      //   }
-      // }.
-      // Поиск по псевдомассиву осуществляется так: массив.позицияПоX.позицияПоY
-      // 1/2 Внедрить проверку, может ли солдат в теории дотрельнуть до массива врагов.left. Если нет - изменить поворот в сторону массива врагов
-      // 1 Если может - через каждые пройденные 10пикселей по x или y сделать провеку, есть ли в данной точке враг
-      // Если врага нет на "острие" поворота - создать несколько других "остиев", посмотреть, есть ли враг хотя бы на нем. Если все еще нет - 
-      // Создать допустимые границы для стрельбы. Пройтись циклом по всей матрице, но уже начиная от позиции игрока.
-      // Начинать перебор в зависимости от поворота игрока. Затем пройтись полностью по вему массиву врагов рядом
-      // Либо не заморачиваться, и просто постройить 360 градусам, и посмотреть а нет ли кого на острие. Вроде более процесозатратно
+      if (!armyMatrix) return;
 
-      // if ( army[this.nearestEnemy] == null || army[this.nearestEnemy].hp < 0) {
-      //    this.nearestEnemy = this.getEnemyOnRotateLine()
-      // }
-      
-      // if ( army[this.nearestEnemy] ) {
-      //    army[this.nearestEnemy].hp -= rand(1, 30)
-      //    if (army[this.nearestEnemy].hp < 0) {
-      //       army[this.nearestEnemy] = null
-      //       this.nearestEnemy = this.getEnemyOnRotateLine()
-      //    }
-      //    return true
-      // }
-
-      let soldersShoutDist = 150
+      let soldersShoutDist = 200
       
       if (
          !(this.x - soldersShoutDist > armyMatrix.border.right ||
@@ -51,30 +22,25 @@ export class Solder {
          )
       ) {
 
-         let i = this.x
-         let j = this.y
+         let army = armyMatrix.solders
+
+         let x = this.startPos.x
+         let y = this.startPos.y
+
+         while (true) {
+
+            
 
 
-         for (let iteration = soldersShoutDist; iteration >= 0; iteration-=10) {
-            i += Math.sin(toRad(this.rotate)) * 10;
-            j += Math.cos(toRad(this.rotate)) * 10;
-
-            if ( !armyMatrix[Round10(i)] ) continue;
-
-            if ( armyMatrix[Round10(i)][Round10(j)] ) {
-               armyMatrix[Round10(i)][Round10(j)].hp -= 1001
-               if ( armyMatrix[Round10(i)][Round10(j)].hp < 0 ) {
-                  armyMatrix[Round10(i)][Round10(j)].x = 0
-                  armyMatrix[Round10(i)][Round10(j)].alive = false
-               }
-               break;
-            } 
+            alert(1)
          }
 
+
+
       } else {
-
+         this.x += Math.floor(Math.sin(toRad(this.rotate)) * 10);
+         this.y += Math.floor(Math.cos(toRad(this.rotate)) * 10);
       }
-
 
    }
 
@@ -135,6 +101,66 @@ export class Solder {
 
       return nearestShip
 
+   }
+
+   getNearestXLine(value, a) {
+
+      // stackoverflow.com/questions/30245166/find-the-nearest-closest-value-in-a-sorted-list
+
+      if (value < a[0][0].x) {
+         return a[0][0].x;
+      }
+      if (value > a[a.length-1][0].x) {
+         return a[a.length-1][0].x;
+      }
+
+      let low = 0;
+      let high = a.length - 1;
+
+      while (low <= high) {
+         let mid = Math.ceil( (high + low) / 2 );
+
+         if (value < a[mid][0].x) {
+            high = mid - 1;
+         } else if (value > a[mid][0].x) {
+            low = mid + 1;
+         } else {
+            return a[mid][0].x;
+         }
+      }
+
+      return (a[low][0].x - value) < (value - a[high][0].x) ? a[low][0].x : a[high][0].x;
+     
+   }
+
+   getNearestYLine(value, a, xLine) {
+
+      // stackoverflow.com/questions/30245166/find-the-nearest-closest-value-in-a-sorted-list
+
+      if (value < a[0][0].x) {
+         return a[0][0].x;
+      }
+      if (value > a[a.length-1][0].x) {
+         return a[a.length-1][0].x;
+      }
+
+      let low = 0;
+      let high = a.length - 1;
+
+      while (low <= high) {
+         let mid = Math.ceil( (high + low) / 2 );
+
+         if (value < a[mid][0].x) {
+            high = mid - 1;
+         } else if (value > a[mid][0].x) {
+            low = mid + 1;
+         } else {
+            return a[mid][0].x;
+         }
+      }
+
+      return (a[low][0].x - value) < (value - a[high][0].x) ? a[low][0].x : a[high][0].x;
+     
    }
 
 

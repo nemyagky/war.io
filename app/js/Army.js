@@ -1,6 +1,6 @@
 import { ctx } from "./init";
 import { Infantryman } from "./Infantryman";
-import { setColor, toRad, Round10 } from "./functions";
+import { setColor, toRad } from "./functions";
 import {troops} from './Troops'
 
 export class Army {
@@ -34,8 +34,8 @@ export class Army {
             this.solders.push(new Infantryman(i, j, params.team));
          };
       };
-
       this.setMoveTo(params.rotate);
+
    };
 
 
@@ -46,8 +46,10 @@ export class Army {
       this.rotate = rotate
    };
 
+   
+   draw() { 
+      
 
-   draw() {
       let armiesNear = this.isArmiesIntersect()
 
       if (armiesNear.length) {
@@ -104,16 +106,7 @@ export class Army {
 
    };
 
-   // Преобрахует массив кораблей в массив вида {
-   //   X10: {
-   //      Y10: [солдат и его свойства],
-   //      Y20: [солдат и его свойства]
-   // },
-   //   X20: {
-   //      Y10: [солдат и его свойства],
-   //      Y20: [солдат и его свойства]
-   //   }
-   // }
+
    toMatrix(armyNear) {
 
       let armyMatrix = {
@@ -122,23 +115,36 @@ export class Army {
             left: Infinity,
             right: 0,
             bottom: 0
-         }
+         },
+         solders: []
       };
 
 
 
-      armyNear.forEach(solder => {
+      // На выходе мы должны получить отсортированный массив.
+      // Должен быть массив освободившихся id. Как только создается солдат - он получает id из списка освободившихся
+      // Завести переменную, отвечающую за то, как много солдат ищет противника в этот кадр
 
-         let solderMatrixCords = {
-            x: Round10(solder.x),
-            y: Round10(solder.y)
-         }
+      // 
 
-         if ( armyMatrix[solderMatrixCords.x] ) {
-            armyMatrix[solderMatrixCords.x][solderMatrixCords.y] = solder
+      let helpObj = {}
+
+
+      armyNear.forEach( (solder) => {
+
+         let solderX = Math.round(solder.x)
+         let solderY = Math.round(solder.y)
+
+         // If 2 enemies in 1 cords
+         if ( !helpObj[solderX] ) {
+            helpObj[solderX] = {}
+            helpObj[solderX][solderY] = [solder]
          } else {
-            armyMatrix[solderMatrixCords.x] = {}
-            armyMatrix[solderMatrixCords.x][solderMatrixCords.y] = solder
+            if (helpObj[solderX][solderY]) {
+               helpObj[solderX][solderY].push(solder)
+            } else {
+               helpObj[solderX][solderY] = [solder]
+            }
          }
 
          if ( solder.x < armyMatrix.border.left ) armyMatrix.border.left = solder.x
@@ -147,6 +153,64 @@ export class Army {
          if ( solder.y > armyMatrix.border.bottom ) armyMatrix.border.bottom = solder.y
 
       })
+
+
+      this.solders.forEach((solder) => {
+         let solderX = Math.round(solder.x)
+         let solderY = Math.round(solder.y)
+
+         if ( !helpObj[solderX] ) {
+            helpObj[solderX] = {}
+            helpObj[solderX][solderY] = [solder]
+         } else {
+            if (helpObj[solderX][solderY]) {
+               helpObj[solderX][solderY].push(solder)
+            } else {
+               helpObj[solderX][solderY] = [solder]
+            }
+         }
+      })
+
+
+      let team = this.solders[0].team // RED
+
+      let arrayX = 0
+
+      for (let objLine in helpObj) {
+
+         armyMatrix.solders[arrayX] = [];
+         let shouldWeIterateX = false
+         let shouldWeIterateY = false
+         let arrayY = 0
+
+         for (let key in helpObj[objLine]) {
+
+      
+            helpObj[objLine][key].forEach((solder) => {
+
+               // Если текущий элемент принадлежит к нашей команде - нам надо найти для него точку отсчета
+               if ( solder.team == team ) {
+                  solder.startPos = {
+                     x: arrayX,
+                     y: arrayY
+                  }
+               } else {
+               // Иначе - просто отсортировать массив врагов
+                  armyMatrix.solders[arrayX].push( solder )
+                  shouldWeIterateX = true
+                  shouldWeIterateY = true
+               }
+
+            })
+
+            if (shouldWeIterateY) {
+               arrayY++
+            }
+         }
+         if (shouldWeIterateX) {
+            arrayX++
+         }
+      }
 
       return armyMatrix
    }
