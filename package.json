@@ -21,7 +21,10 @@
     "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
+    "d3-quadtree": "^1.0.6",
+    "js-quadtree": "^2.0.1",
     "lodash.sortby": "^4.7.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "quadtree-lib": "^1.0.9"
   }
 }

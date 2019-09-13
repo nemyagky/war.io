@@ -1,42 +1,57 @@
-import {Army} from './Army'
+import { Player } from "./Player"
 
-export let troops = [];
 
 
 export let Troops = new class Troops {
 
    constructor() {
-      let green = new Army()
-      green.create({
-         team: 'green',
-         rotate: 45,
-         borders: {
-            startX: 0, 
-            startY: 0, 
-            endX: 30, 
-            endY: 200
-         }
-      })
-      troops.push(green)
-      
-      let red = new Army()
-      red.create({
-         team: 'red',
-         rotate: 270,
-         borders: {
-            startX: 11, 
-            startY: 0, 
-            endX: 50, 
-            endY: 200
-         }
-      })
-      troops.push(red)
+
+      this.players = []
+
+
+
+
+      let solders = []
+      for (let i = 300; i < 450; i+=11) {
+         for (let j = 100; j < 600; j+=11) {
+            solders.push({x:i, y:j});
+         };
+      };
+      this.players.push(new Player('blue', this.players.length, solders))
+
+
+      solders = []
+      for (let i = 550; i < 700; i+=11) {
+         for (let j = 100; j < 600; j+=11) {
+            solders.push({x:i, y:j});
+         };
+      };
+      this.players.push(new Player('red', this.players.length, solders))
+
    }
 
+
    draw() {
-      troops.forEach(army => {
-         army.draw()
+      this.players.forEach(player => {
+         player.divisions.forEach(division => {
+            division.draw()
+         })
       })
+   }
+
+   getAllEnemiesTroops(team) {
+
+      let enemiesTroops = [];
+
+      this.players.forEach(player => {
+         if (team != player.team) {
+            player.divisions.forEach(division => {
+               enemiesTroops.push(division)
+            })
+         }
+      })
+
+      return enemiesTroops
    }
 
 }
