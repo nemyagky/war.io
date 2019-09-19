@@ -3,20 +3,21 @@ import { Division } from "./Division"
 
 export class Player {
 
-   constructor(team, id, startSolders) {
+   constructor(team, id, startSolders, rotate) {
+
       this.team = team
       this.id = id
       this.divisions = []
-      this.addDivision()
+      this.addDivision(rotate)
+      
       startSolders.forEach((solderCords) => {
          this.addSolder(solderCords.x, solderCords.y)
       })
 
-
    }
 
-   addDivision() {
-      this.divisions.push(new Division(this.team))
+   addDivision(rotate) {
+      this.divisions.push(new Division(this.team, rotate))
    }
    
 

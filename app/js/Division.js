@@ -10,10 +10,11 @@ export class Division {
 
 
    // TODO границы дивизии
-   constructor(team) {
+   constructor(team, rotate) {
       this.solders = [];
       this.deletedSolders = [];
       this.team = team;
+      this.rotate = rotate;
       this.borders = {
          top: Infinity,
          left: Infinity,
@@ -39,23 +40,34 @@ export class Division {
       }
 
       if (divisionsNear) {
+
          let soldersQuadtree = this.toQuadtree(divisionsNear)
+
+         let soldersQuadtreeSize = soldersQuadtree.size()
+
 
          this.solders.forEach(solder => {
 
+            if (!solder) {
+               return
+            }
 
-            if (!solder) return;
 
-            solder.shoot(soldersQuadtree, this.borders)
+            if (soldersQuadtreeSize) {
+               solder.shoot(soldersQuadtree, this.borders, this.rotate)
+            }
+
             setColor(solder.team);
             ctx.fillRect(solder.x, solder.y, 10, 10);
          });
+
 
       } else {
 
          this.solders.forEach(solder => {
             if (!solder) return
             
+
             solder.x += Math.sin(toRad(solder.rotate)) * 1;
             solder.y += Math.cos(toRad(solder.rotate)) * 1;
             setColor(solder.team);
@@ -73,7 +85,7 @@ export class Division {
 
       Troops.getAllEnemiesTroops(this.team).forEach(division => {
 
-         let soldersShoutDist = 1000;
+         let soldersShoutDist = 200;
 
          if (
             !(this.left - soldersShoutDist > division.right ||
@@ -83,6 +95,7 @@ export class Division {
             )
             
          ) {
+
             nearestDivisions.push(division)
          }
       });
@@ -98,9 +111,14 @@ export class Division {
          .extent([[-1, -1], [Map.w + 1, Map.h + 1]])
 
       nearestDivisions.forEach((division) => {
+         
          division.solders.forEach(solder => {
 
-            if (solder.shootBy < 5) {
+            if (!solder) {
+               return
+            }
+
+            if (solder.hp > 0) {
                soldersQuadtree.add([solder.x, solder.y, solder.indexes])
             }
             
@@ -112,8 +130,8 @@ export class Division {
          })
       })
 
-
       return soldersQuadtree
+
    }
 
 };

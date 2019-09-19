@@ -8,51 +8,40 @@ export class Solder {
    }
 
 
-   shoot(solersQuadtree, soldresDivisionBorders) {
-
-      if (!solersQuadtree) return;
-
-      let soldersShoutDist = 20000
+   shoot(soldersQuadtree, soldresDivisionBorders, currentRotate) {
+      
+      let soldersShoutDist = 200
       
       if (
          !(this.x - soldersShoutDist > soldresDivisionBorders.right ||
-          this.x + soldersShoutDist < soldresDivisionBorders.left ||
-          this.y - soldersShoutDist > soldresDivisionBorders.bottom ||
-          this.y + soldersShoutDist < soldresDivisionBorders.top
-         )
-      ) {
+            this.x + soldersShoutDist < soldresDivisionBorders.left ||
+            this.y - soldersShoutDist > soldresDivisionBorders.bottom ||
+            this.y + soldersShoutDist < soldresDivisionBorders.top
+            )
+         ) 
+      {
 
-         if (this.targetForShooting) {
-            this.targetForShooting.hp -= rand(0, 1000)
+         let nearestEnemy = soldersQuadtree.find(this.x, this.y, 200);
+   
+         if (nearestEnemy) {
+            let indexes = nearestEnemy[2];
 
 
-            if (this.targetForShooting.hp <= 0) {
-               this.targetForShooting.y = -1000
-               this.targetForShooting = null
+            let nearestEmemyOrig = Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index]
+
+            if (!nearestEmemyOrig) return
+
+            nearestEmemyOrig.hp -= rand(0, 3)
+
+            if ( nearestEmemyOrig.hp <= 0 ) {
+               soldersQuadtree.remove(nearestEnemy)
+               Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index] = null
             }
-         } else {
-            let nearestEnemies = solersQuadtree.find(this.x, this.y, 600);
-            
-            if (nearestEnemies) {
-               let indexes = nearestEnemies[2];
-
-               let nearestEmemyOrig = Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index]
-
-
-               nearestEmemyOrig.shootBy++
-
-               if ( nearestEmemyOrig.shootBy > 5 ) {
-                  solersQuadtree.remove(nearestEmemyOrig.x, nearestEmemyOrig.y)
-               }
-
-               this.targetForShooting = nearestEmemyOrig
-            }
-
          }
 
       } else {
-         this.x += Math.floor(Math.sin(toRad(this.rotate))*0);
-         this.y += Math.floor(Math.cos(toRad(this.rotate))*0);
+         this.x += Math.floor(Math.sin(toRad(currentRotate))*1);
+         this.y += Math.floor(Math.cos(toRad(currentRotate))*1);
       }
 
    }
