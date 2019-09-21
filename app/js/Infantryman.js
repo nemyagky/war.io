@@ -15,6 +15,8 @@ export class Infantryman extends Solder {
       this.x = x
       this.y = y
       this.team = team
+      this.speed = 0
+      this.rotate = 90
 
       this.indexes = {
          player: solderIndexes.player,

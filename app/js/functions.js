@@ -101,12 +101,20 @@ export let keyboardPressed = {};
     if (e.keyCode == 65) keyboardPressed.a = true;
     if (e.keyCode == 68) keyboardPressed.s = true;
     if (e.keyCode == 83) keyboardPressed.d = true;
+    if (e.keyCode == 38) keyboardPressed.topArrow = true;
+    if (e.keyCode == 37) keyboardPressed.leftArrow = true;
+    if (e.keyCode == 39) keyboardPressed.rightArrow = true;
+    if (e.keyCode == 40) keyboardPressed.bottomArrow = true;
   };
   window.onkeyup = function (e) {
     if (e.keyCode == 87) keyboardPressed.w = false;
     if (e.keyCode == 65) keyboardPressed.a = false;
     if (e.keyCode == 68) keyboardPressed.s = false;
     if (e.keyCode == 83) keyboardPressed.d = false;
+    if (e.keyCode == 38) keyboardPressed.topArrow = false;
+    if (e.keyCode == 37) keyboardPressed.leftArrow = false;
+    if (e.keyCode == 39) keyboardPressed.rightArrow = false;
+    if (e.keyCode == 40) keyboardPressed.bottomArrow = false;
   };
 })();
 

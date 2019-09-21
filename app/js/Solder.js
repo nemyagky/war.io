@@ -1,5 +1,6 @@
-import {toRad, rand} from './functions';
+import {toRad, rand, setColor, Round10, rotate} from './functions';
 import { Troops } from './Troops';
+import { ctx } from './init';
 
 export class Solder {
 
@@ -8,9 +9,20 @@ export class Solder {
    }
 
 
-   shoot(soldersQuadtree, soldresDivisionBorders, currentRotate) {
+   behavior(soldersQuadtree, soldersSize, soldresDivisionBorders, currentRotate) {
       
-      let soldersShoutDist = 200
+      if (soldersSize) {
+         this.shoot()
+      } else {
+         this.move()
+      }
+      
+
+   }
+
+
+   shoot() {
+      let soldersShoutDist = 2000
       
       if (
          !(this.x - soldersShoutDist > soldresDivisionBorders.right ||
@@ -21,7 +33,7 @@ export class Solder {
          ) 
       {
 
-         let nearestEnemy = soldersQuadtree.find(this.x, this.y, 200);
+         let nearestEnemy = soldersQuadtree.find(this.x, this.y, 2000);
    
          if (nearestEnemy) {
             let indexes = nearestEnemy[2];
@@ -37,13 +49,43 @@ export class Solder {
                soldersQuadtree.remove(nearestEnemy)
                Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index] = null
             }
+         } else {
+            this.move()
          }
-
       } else {
-         this.x += Math.floor(Math.sin(toRad(currentRotate))*1);
-         this.y += Math.floor(Math.cos(toRad(currentRotate))*1);
+         this.move()
       }
+   }
 
+   setRotateTo(x, y) {
+      this.moveTo = {
+         x: x,
+         y: y
+      }
+      this.rotate = 180 / Math.PI * Math.atan2(y - this.y, x - this.x);
+      this.speed = 3
+   }
+
+   move() {
+
+      if (!this.moveTo || !this.rotate) return
+
+      this.x += Math.cos(toRad(this.rotate))*this.speed;
+      this.y += Math.sin(toRad(this.rotate))*this.speed;
+
+      if (Math.abs(this.x-this.moveTo.x) < 3 && Math.abs(this.y-this.moveTo.y) < 3) {
+         this.speed = 0;
+         this.x = this.moveTo.x
+         this.y = this.moveTo.y
+      }
+   }
+
+   draw() {
+      setColor(this.team);
+
+      rotate(this.rotate)
+      ctx.fillRect(this.x, this.y, 10, 10);
+      ctx.restore()
    }
 
 }

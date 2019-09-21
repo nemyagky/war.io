@@ -1,6 +1,5 @@
 import { ctx } from "./init";
-import { Infantryman } from "./Infantryman";
-import { setColor, toRad } from "./functions";
+import { setColor, toRad, cursor } from "./functions";
 import { Troops } from './Troops';
 import {Map} from './Map'
 import * as d3 from 'd3-quadtree'
@@ -8,8 +7,6 @@ import * as d3 from 'd3-quadtree'
 
 export class Division {
 
-
-   // TODO границы дивизии
    constructor(team, rotate) {
       this.solders = [];
       this.deletedSolders = [];
@@ -21,15 +18,18 @@ export class Division {
          right: 0,
          bottom: 0
       }
+
+      window.addEventListener('mousedown', () => {
+         this.createTransparentDivision(this.solders)
+      })
    };
 
    addSolder(solder) {
       this.solders.push(solder)
    }
-
    
    draw() {
-      
+
       let divisionsNear = this.getNearestDivisions()
 
       this.borders = {
@@ -39,10 +39,10 @@ export class Division {
          bottom: 0
       }
 
+
       if (divisionsNear) {
 
          let soldersQuadtree = this.toQuadtree(divisionsNear)
-
          let soldersQuadtreeSize = soldersQuadtree.size()
 
 
@@ -52,13 +52,9 @@ export class Division {
                return
             }
 
+            solder.behavior(soldersQuadtree, soldersQuadtreeSize, this.borders, this.rotate)
 
-            if (soldersQuadtreeSize) {
-               solder.shoot(soldersQuadtree, this.borders, this.rotate)
-            }
-
-            setColor(solder.team);
-            ctx.fillRect(solder.x, solder.y, 10, 10);
+            solder.draw()
          });
 
 
@@ -66,14 +62,17 @@ export class Division {
 
          this.solders.forEach(solder => {
             if (!solder) return
-            
 
-            solder.x += Math.sin(toRad(solder.rotate)) * 1;
-            solder.y += Math.cos(toRad(solder.rotate)) * 1;
-            setColor(solder.team);
-            ctx.fillRect(solder.x, solder.y, 10, 10);
+            solder.move()
+            solder.draw()
+
          })
 
+      }
+
+
+      if (cursor.isPressed) {
+       //  this.drawTransparentDivision()
       }
 
    };
@@ -85,7 +84,7 @@ export class Division {
 
       Troops.getAllEnemiesTroops(this.team).forEach(division => {
 
-         let soldersShoutDist = 200;
+         let soldersShoutDist = 2000;
 
          if (
             !(this.left - soldersShoutDist > division.right ||
@@ -130,8 +129,48 @@ export class Division {
          })
       })
 
+
       return soldersQuadtree
 
    }
 
+   createTransparentDivision(solders) {
+
+      this.transparentDivision = []
+      
+
+      for (let i = 0; i < solders.length; i++) {
+
+         if (i % 10 == 0) {
+            this.transparentDivision.solders.push([])
+         }
+
+         this.transparentDivision.solders[soldersLength-1].push(solders[i])
+
+      }
+
+   }
+
+   // drawTransparentDivision() {
+   //    setColor('red')
+
+   //    // Для каждой будущей точки находим ближайшую в текущем массиве, причем начиная перебор с противополой стороны
+
+
+   //    for (let i = 0; i < this.transparentDivision.soldersLength; i++) {
+   //       ctx.fillRect(this.transparentDivision.solders[i][i%10].x, this.transparentDivision.solders[i][i%10].y, 10, 10);
+   //       this.transparentDivision.solders[i][i%10].x++
+   //    }
+   // }
+
 };
+
+
+
+
+
+
+
+
+
+
