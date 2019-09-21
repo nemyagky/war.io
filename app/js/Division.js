@@ -145,21 +145,20 @@ export class Division {
       this.transparentDivision = []
 
       let solders = this.solders
-      let soldersInLine = 25
+      let soldersInLine = 10
 
-      let x = -solders.length/2/soldersInLine*11
-      let startY = -soldersInLine/2*11
-      let maxY = soldersInLine/2*11
-      let y = startY
-
+      let y = -solders.length/2/soldersInLine*11
+      let startX = -soldersInLine/2*11
+      let maxX = soldersInLine/2*11
+      let x = startX
       for (let i = 0; i < solders.length; i++) {
 
          this.transparentDivision.push({x: x, y: y})
 
-         y += 11
-         if (y >= maxY) {
-            x+=11
-            y = startY
+         x += 11
+         if (x >= maxX) {
+            y+=11
+            x = startX
          }
 
       }
@@ -182,9 +181,37 @@ export class Division {
    setMoveToForSolders() {
       if (!this.transparentDivision) return
 
-      this.solders.forEach( (solder, i) => {
+      let sortedSolders = this.sortByHorisontal()
+
+      sortedSolders.forEach( (solder, i) => {
          solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
       })
+   }
+
+   sortByHorisontal() {
+
+      let sortedObj = {}
+
+      this.solders.forEach(solder => {
+         if (!sortedObj[solder.y]) {
+            sortedObj[Math.round(solder.y)] = []
+            sortedObj[Math.round(solder.y)].push(solder)
+         } else {
+            sortedObj[Math.round(solder.y)].push(solder)
+         }
+      })
+
+      let sortedArray = []
+
+      for (let line in sortedObj) {
+         sortedObj[line].forEach((solder) => {
+            sortedArray.push(solder)
+         })
+      }
+      console.log(sortedObj)
+
+      return sortedArray
+
 
    }
 
