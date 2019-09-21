@@ -20,7 +20,11 @@ export class Division {
       }
 
       window.addEventListener('mousedown', () => {
-         this.createTransparentDivision(this.solders)
+         this.createTransparentDivision()
+      })
+
+      window.addEventListener('mouseup', () => {
+         this.setMoveToForSolders()
       })
    };
 
@@ -72,7 +76,7 @@ export class Division {
 
 
       if (cursor.isPressed) {
-       //  this.drawTransparentDivision()
+         this.drawTransparentDivision()
       }
 
    };
@@ -134,34 +138,55 @@ export class Division {
 
    }
 
-   createTransparentDivision(solders) {
+
+
+   createTransparentDivision() {
 
       this.transparentDivision = []
-      
+
+      let solders = this.solders
+      let soldersInLine = 25
+
+      let x = -solders.length/2/soldersInLine*11
+      let startY = -soldersInLine/2*11
+      let maxY = soldersInLine/2*11
+      let y = startY
 
       for (let i = 0; i < solders.length; i++) {
 
-         if (i % 10 == 0) {
-            this.transparentDivision.solders.push([])
-         }
+         this.transparentDivision.push({x: x, y: y})
 
-         this.transparentDivision.solders[soldersLength-1].push(solders[i])
+         y += 11
+         if (y >= maxY) {
+            x+=11
+            y = startY
+         }
 
       }
 
    }
 
-   // drawTransparentDivision() {
-   //    setColor('red')
+   drawTransparentDivision() {
 
-   //    // Для каждой будущей точки находим ближайшую в текущем массиве, причем начиная перебор с противополой стороны
+      if (!this.transparentDivision) return
 
+      this.createTransparentDivision()
 
-   //    for (let i = 0; i < this.transparentDivision.soldersLength; i++) {
-   //       ctx.fillRect(this.transparentDivision.solders[i][i%10].x, this.transparentDivision.solders[i][i%10].y, 10, 10);
-   //       this.transparentDivision.solders[i][i%10].x++
-   //    }
-   // }
+      setColor('rgba(0,0,255,0.5)')
+
+      this.transparentDivision.forEach((transperentSolder) => {
+         ctx.fillRect(transperentSolder.x+cursor.x, transperentSolder.y+cursor.y, 10, 10)
+      })
+   }
+
+   setMoveToForSolders() {
+      if (!this.transparentDivision) return
+
+      this.solders.forEach( (solder, i) => {
+         solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
+      })
+
+   }
 
 };
 
