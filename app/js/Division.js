@@ -145,7 +145,7 @@ export class Division {
       this.transparentDivision = []
 
       let solders = this.solders
-      let soldersInLine = 10
+      let soldersInLine = 25
 
       let y = -solders.length/2/soldersInLine*11
       let startX = -soldersInLine/2*11
@@ -186,6 +186,8 @@ export class Division {
       sortedSolders.forEach( (solder, i) => {
          solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
       })
+
+
    }
 
    sortByHorisontal() {
@@ -193,27 +195,44 @@ export class Division {
       let sortedObj = {}
 
       this.solders.forEach(solder => {
-         if (!sortedObj[solder.y]) {
-            sortedObj[Math.round(solder.y)] = []
-            sortedObj[Math.round(solder.y)].push(solder)
+         if (!sortedObj[Math.round(solder.y)]) {
+            sortedObj[Math.round(solder.y)] = {}
+            sortedObj[Math.round(solder.y)][Math.round(solder.x)] = solder
          } else {
-            sortedObj[Math.round(solder.y)].push(solder)
+            sortedObj[Math.round(solder.y)][Math.round(solder.x)] = solder
          }
       })
 
       let sortedArray = []
 
+      let lineNumber = 0
+      let colomnNumber = 0
+
+      let nextLine = []
+
       for (let line in sortedObj) {
-         sortedObj[line].forEach((solder) => {
-            sortedArray.push(solder)
-         })
+         for (let colomn in sortedObj[line]) {
+
+            sortedArray.push(sortedObj[line][colomn])
+
+            // colomnNumber++
+
+            // if (colomnNumber >= 25) {
+            //    colomnNumber = 0
+            //    lineNumber++
+            //    sortedArray.push([])
+            // }
+         }
       }
-      console.log(sortedObj)
 
       return sortedArray
 
 
    }
+
+
+   // Начинаем перебор с левого верхнего края, постепенно приближаясь к нижнеу правому. Каждого пройденного в цикле солдата
+   // Добавляем в массив, который впоследствии возращаем (с учетом индексов, так что придется хранить переменные)
 
 };
 
