@@ -142,7 +142,7 @@ export class Division {
 
    createTransparentDivision() {
 
-      this.transparentDivision = []
+      this.transparentDivision = [[]]
 
       let solders = this.solders
       let soldersInLine = 25
@@ -153,10 +153,11 @@ export class Division {
       let x = startX
       for (let i = 0; i < solders.length; i++) {
 
-         this.transparentDivision.push({x: x, y: y})
+         this.transparentDivision[this.transparentDivision.length-1].push({x: x, y: y})
 
          x += 11
          if (x >= maxX) {
+            this.transparentDivision.push([])
             y+=11
             x = startX
          }
@@ -173,15 +174,51 @@ export class Division {
 
       setColor('rgba(0,0,255,0.5)')
 
-      this.transparentDivision.forEach((transperentSolder) => {
-         ctx.fillRect(transperentSolder.x+cursor.x, transperentSolder.y+cursor.y, 10, 10)
+      this.transparentDivision.forEach((line) => {
+         line.forEach((transperentSolder) => {
+            ctx.fillRect(transperentSolder.x+cursor.x, transperentSolder.y+cursor.y, 10, 10)
+         })
       })
    }
 
    setMoveToForSolders() {
       if (!this.transparentDivision) return
 
-      let sortedSolders = this.sortByHorisontal()
+      let sortedSolders = this.transparentDivision
+
+      let canWe = true
+      let line = 0;
+      let colomn = 0;
+      let currentMaxLine = 0
+      let currentMaxColomn = 0;
+
+      sdfgsdf
+
+      while (canWe) {
+
+
+
+
+
+         sortedSolders[line][colomn].find()
+         line++
+         colomn++
+      }
+
+      // Каждую итерацию мы знаем текущую позицию по x и y
+      // Начинаем перебор по y, пока 
+
+
+
+
+
+
+
+
+
+
+
+
 
       sortedSolders.forEach( (solder, i) => {
          solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
@@ -190,43 +227,7 @@ export class Division {
 
    }
 
-   sortByHorisontal() {
-
-      let sortedObj = {}
-
-      this.solders.forEach(solder => {
-         if (!sortedObj[Math.round(solder.y)]) {
-            sortedObj[Math.round(solder.y)] = {}
-            sortedObj[Math.round(solder.y)][Math.round(solder.x)] = solder
-         } else {
-            sortedObj[Math.round(solder.y)][Math.round(solder.x)] = solder
-         }
-      })
-
-      let sortedArray = []
-
-      let lineNumber = 0
-      let colomnNumber = 0
-
-      let nextLine = []
-
-      for (let line in sortedObj) {
-         for (let colomn in sortedObj[line]) {
-
-            sortedArray.push(sortedObj[line][colomn])
-
-            // colomnNumber++
-
-            // if (colomnNumber >= 25) {
-            //    colomnNumber = 0
-            //    lineNumber++
-            //    sortedArray.push([])
-            // }
-         }
-      }
-
-      return sortedArray
-
+   find() {
 
    }
 
