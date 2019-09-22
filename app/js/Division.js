@@ -34,6 +34,7 @@ export class Division {
    
    draw() {
 
+
       let divisionsNear = this.getNearestDivisions()
 
       this.borders = {
@@ -142,7 +143,7 @@ export class Division {
 
    createTransparentDivision() {
 
-      this.transparentDivision = [[]]
+      this.transparentDivision = []
 
       let solders = this.solders
       let soldersInLine = 25
@@ -153,11 +154,10 @@ export class Division {
       let x = startX
       for (let i = 0; i < solders.length; i++) {
 
-         this.transparentDivision[this.transparentDivision.length-1].push({x: x, y: y})
+         this.transparentDivision.push({x: x, y: y})
 
          x += 11
          if (x >= maxX) {
-            this.transparentDivision.push([])
             y+=11
             x = startX
          }
@@ -170,59 +170,59 @@ export class Division {
 
       if (!this.transparentDivision) return
 
-      this.createTransparentDivision()
+     // this.createTransparentDivision()
 
       setColor('rgba(0,0,255,0.5)')
 
-      this.transparentDivision.forEach((line) => {
-         line.forEach((transperentSolder) => {
-            ctx.fillRect(transperentSolder.x+cursor.x, transperentSolder.y+cursor.y, 10, 10)
-         })
+      this.transparentDivision.forEach((transperentSolder) => {
+         ctx.fillRect(transperentSolder.x+cursor.x, transperentSolder.y+cursor.y, 10, 10)
       })
    }
 
    setMoveToForSolders() {
       if (!this.transparentDivision) return
 
-      let sortedSolders = this.transparentDivision
+      // Преобразуем оба массива в квадтрисы
 
-      let canWe = true
-      let line = 0;
-      let colomn = 0;
-      let currentMaxLine = 0
-      let currentMaxColomn = 0;
+      let transparentQuadtree = d3.quadtree()
 
-      sdfgsdf
+      this.transparentDivision.forEach( (solder) => {
+         transparentQuadtree.add([solder.x, solder.y, solder])
+      })
 
-      while (canWe) {
+      let soldersQuadtree = d3.quadtree()
 
+      this.solders.forEach((solder) => {
+         soldersQuadtree.add([solder.x, solder.y, solder])
+      })
 
+      let soldersHeigth = soldersQuadtree._y1-soldersQuadtree._y0
+      let startY = soldersQuadtree._y0
+      let yNow = 0
+      let transparentHeight = transparentQuadtree._y1-transparentQuadtree._y0
 
+      for (let i = 0; i < this.solders.length; i++) {
 
+         let currentSolder = soldersQuadtree.find(0, yNow, 200000)
+         let currentPlace = transparentQuadtree.find(-1000, currentSolder[1]-startY-transparentHeight/2, 5000000)
+         let indexes = currentSolder[2].indexes
+         Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index].setRotateTo(currentPlace[0]+cursor.x, currentPlace[1]+cursor.y)
 
-         sortedSolders[line][colomn].find()
-         line++
-         colomn++
+         transparentQuadtree.remove(currentPlace)
+         soldersQuadtree.remove(currentSolder)
+
+         yNow+=11
+         if (yNow > soldersHeigth) yNow=0
+
       }
 
-      // Каждую итерацию мы знаем текущую позицию по x и y
-      // Начинаем перебор по y, пока 
 
 
 
 
-
-
-
-
-
-
-
-
-
-      sortedSolders.forEach( (solder, i) => {
-         solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
-      })
+      // sortedSolders.forEach( (solder, i) => {
+      //    solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
+      // })
 
 
    }

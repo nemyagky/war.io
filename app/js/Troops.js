@@ -10,7 +10,7 @@ export let Troops = new class Troops {
 
       let solders = []
       for (let i = 300; i < 500; i+=11) {
-         for (let j = 0; j < 500; j+=11) {
+         for (let j = 100; j < 500; j+=11) {
             solders.push({x:i, y:j});
          };
       };

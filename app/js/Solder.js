@@ -83,9 +83,9 @@ export class Solder {
    draw() {
       setColor(this.team);
 
-      rotate(this.x, this.y, this.rotate)
-      ctx.fillRect(this.x, this.y, 10, 10);
-      ctx.restore()
+      // rotate(this.x, this.y, this.rotate)
+       ctx.fillRect(this.x, this.y, 10, 10);
+      // ctx.restore()
    }
 
 }
