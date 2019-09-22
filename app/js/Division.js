@@ -1,5 +1,5 @@
 import { ctx } from "./init";
-import { setColor, toRad, cursor } from "./functions";
+import { setColor, toRad, cursor, getDistBetween2dots } from "./functions";
 import { Troops } from './Troops';
 import {Map} from './Map'
 import * as d3 from 'd3-quadtree'
@@ -146,7 +146,7 @@ export class Division {
       this.transparentDivision = []
 
       let solders = this.solders
-      let soldersInLine = 25
+      let soldersInLine = 50
 
       let y = -solders.length/2/soldersInLine*11
       let startX = -soldersInLine/2*11
@@ -164,13 +164,24 @@ export class Division {
 
       }
 
+      this.rotateTransparentDivision(-45)
+
+   }
+
+   rotateTransparentDivision(a) {
+      a = toRad(a)
+      this.transparentDivision.forEach(solder => {
+         
+         solder.x = solder.x * Math.cos(a) + solder.y * Math.sin(a)
+         solder.y = -solder.x * Math.sin(a) + solder.y * Math.cos(a)
+      })
    }
 
    drawTransparentDivision() {
 
       if (!this.transparentDivision) return
 
-     // this.createTransparentDivision()
+      //this.createTransparentDivision()
 
       setColor('rgba(0,0,255,0.5)')
 
@@ -186,25 +197,38 @@ export class Division {
 
       let transparentQuadtree = d3.quadtree()
 
-      this.transparentDivision.forEach( (solder) => {
+      this.transparentDivision.forEach( (solder) => {      
          transparentQuadtree.add([solder.x, solder.y, solder])
       })
 
+
+
       let soldersQuadtree = d3.quadtree()
+      let soldersBorders = {
+         top: Infinity,
+         bottom: 0
+      }
 
       this.solders.forEach((solder) => {
+
+         if (solder.y < soldersBorders.top) soldersBorders.top = solder.y
+         if (solder.y > soldersBorders.bottom) soldersBorders.bottom = solder.y
+      
          soldersQuadtree.add([solder.x, solder.y, solder])
       })
 
-      let soldersHeigth = soldersQuadtree._y1-soldersQuadtree._y0
-      let startY = soldersQuadtree._y0
-      let yNow = 0
-      let transparentHeight = transparentQuadtree._y1-transparentQuadtree._y0
+      let soldersHeigth = soldersBorders.bottom - soldersBorders.top
 
+      let startY = soldersBorders.top
+      let yNow = startY
+      let transparentStart = -transparentQuadtree.find(-1000, -1000)[1]
+
+      
       for (let i = 0; i < this.solders.length; i++) {
 
-         let currentSolder = soldersQuadtree.find(0, yNow, 200000)
-         let currentPlace = transparentQuadtree.find(-1000, currentSolder[1]-startY-transparentHeight/2, 5000000)
+         let currentSolder = soldersQuadtree.find(0, yNow)
+         let currentPlace = transparentQuadtree.find(-1000, currentSolder[1] - startY - transparentStart)
+
          let indexes = currentSolder[2].indexes
          Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index].setRotateTo(currentPlace[0]+cursor.x, currentPlace[1]+cursor.y)
 
@@ -212,17 +236,10 @@ export class Division {
          soldersQuadtree.remove(currentSolder)
 
          yNow+=11
-         if (yNow > soldersHeigth) yNow=0
-
+         if (yNow >= soldersHeigth+startY+10) yNow=startY
+         
       }
 
-
-
-
-
-      // sortedSolders.forEach( (solder, i) => {
-      //    solder.setRotateTo(this.transparentDivision[i].x+cursor.x, this.transparentDivision[i].y+cursor.y)
-      // })
 
 
    }

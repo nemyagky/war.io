@@ -9,19 +9,19 @@ export class Solder {
    }
 
 
-   behavior(soldersQuadtree, soldersSize, soldresDivisionBorders, currentRotate) {
+   behavior(soldersQuadtree, soldersSize, soldresDivisionBorders) {
       
       if (soldersSize) {
-         this.shoot()
+         this.shoot(soldersQuadtree)
       } else {
-         this.move()
+         this.move(soldresDivisionBorders)
       }
       
 
    }
 
 
-   shoot() {
+   shoot(soldersQuadtree, soldresDivisionBorders) {
       let soldersShoutDist = 2000
       
       if (
@@ -83,9 +83,9 @@ export class Solder {
    draw() {
       setColor(this.team);
 
-      // rotate(this.x, this.y, this.rotate)
-       ctx.fillRect(this.x, this.y, 10, 10);
-      // ctx.restore()
+      rotate(this.x, this.y, this.rotate)
+      ctx.fillRect(this.x, this.y, 10, 10);
+      ctx.restore()
    }
 
 }
