@@ -12,7 +12,7 @@ export class Solder {
    behavior(soldersQuadtree, soldersSize, soldresDivisionBorders) {
       
       if (soldersSize) {
-         this.shoot(soldersQuadtree)
+         this.shoot(soldersQuadtree, soldresDivisionBorders)
       } else {
          this.move(soldresDivisionBorders)
       }

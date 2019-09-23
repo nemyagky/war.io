@@ -16,6 +16,16 @@ export let Troops = new class Troops {
       };
       this.players.push(new Player('blue', this.players.length, solders, 90))
 
+
+      solders = []
+      for (let i = 900; i < 1400; i+=11) {
+         for (let j = 100; j < 840; j+=11) {
+            solders.push({x:i, y:j});
+         };
+      };
+      this.players.push(new Player('red', this.players.length, solders, 90))
+
+
    }
 
 

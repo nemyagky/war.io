@@ -45,7 +45,7 @@ export class Division {
          bottom: 0
       }
 
-
+      
       if (divisionsNear) {
 
          let soldersQuadtree = this.toQuadtree(divisionsNear)
