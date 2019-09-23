@@ -1,12 +1,12 @@
 import { ctx } from "./init";
-import { setColor, toRad, cursor, getDistBetween2dots } from "./functions";
+import { setColor, toRad, cursor, getDistBetween2dots, keyboardPressed } from "./functions";
 import { Troops } from './Troops';
 import {Map} from './Map'
 import * as d3 from 'd3-quadtree'
 
 
 export class Division {
-
+   
    constructor(team, rotate) {
       this.solders = [];
       this.deletedSolders = [];
@@ -18,7 +18,8 @@ export class Division {
          right: 0,
          bottom: 0
       }
-
+      
+      this.transparentDivisionRotate = 0
       window.addEventListener('mousedown', () => {
          this.createTransparentDivision()
       })
@@ -163,25 +164,33 @@ export class Division {
          }
 
       }
-
-      this.rotateTransparentDivision(-45)
+      this.rotateTransparentDivision()
 
    }
 
-   rotateTransparentDivision(a) {
-      a = toRad(a)
+   rotateTransparentDivision() {
+      let a = toRad(this.transparentDivisionRotate)
+      alert(a)
       this.transparentDivision.forEach(solder => {
          
+         //alert(solder.x + ' ' + solder.y)
          solder.x = solder.x * Math.cos(a) + solder.y * Math.sin(a)
-         solder.y = -solder.x * Math.sin(a) + solder.y * Math.cos(a)
+         solder.y = solder.x * Math.sin(a) - solder.y * Math.cos(a)
+         //alert(solder.x + ' ' + solder.y)
       })
    }
 
    drawTransparentDivision() {
 
+      
       if (!this.transparentDivision) return
-
-      //this.createTransparentDivision()
+      
+      
+      if (keyboardPressed.w) {
+         this.createTransparentDivision()
+         this.transparentDivisionRotate += 1
+         this.rotateTransparentDivision()
+      }
 
       setColor('rgba(0,0,255,0.5)')
 
