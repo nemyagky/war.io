@@ -155,7 +155,7 @@ export class Division {
       let x = startX
       for (let i = 0; i < solders.length; i++) {
 
-         this.transparentDivision.push({x: x, y: y})
+         this.transparentDivision.push({x: x, y: y, startX: x, startY: y})
 
          x += 11
          if (x >= maxX) {
@@ -170,13 +170,10 @@ export class Division {
 
    rotateTransparentDivision() {
       let a = toRad(this.transparentDivisionRotate)
-      alert(a)
       this.transparentDivision.forEach(solder => {
          
-         //alert(solder.x + ' ' + solder.y)
-         solder.x = solder.x * Math.cos(a) + solder.y * Math.sin(a)
-         solder.y = solder.x * Math.sin(a) - solder.y * Math.cos(a)
-         //alert(solder.x + ' ' + solder.y)
+         solder.x = solder.startX * Math.cos(a) + solder.startY * Math.sin(a)
+         solder.y = solder.startX * Math.sin(a) - solder.startY * Math.cos(a)
       })
    }
 
@@ -188,7 +185,7 @@ export class Division {
       
       if (keyboardPressed.w) {
          this.createTransparentDivision()
-         this.transparentDivisionRotate += 1
+         this.transparentDivisionRotate += 3
          this.rotateTransparentDivision()
       }
 
