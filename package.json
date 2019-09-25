@@ -25,6 +25,7 @@
     "js-quadtree": "^2.0.1",
     "lodash.sortby": "^4.7.0",
     "path": "^0.12.7",
-    "quadtree-lib": "^1.0.9"
+    "quadtree-lib": "^1.0.9",
+    "three": "^0.108.0"
   }
 }
