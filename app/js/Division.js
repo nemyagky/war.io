@@ -1,5 +1,5 @@
 import { ctx } from "./init";
-import { setColor, toRad, cursor, getDistBetween2dots, keyboardPressed } from "./functions";
+import { setColor, toRad, cursor, keyboardPressed } from "./functions";
 import { Troops } from './Troops';
 import {Map} from './Map'
 import * as d3 from 'd3-quadtree'
@@ -28,10 +28,12 @@ export class Division {
          this.setMoveToForSolders()
       })
    };
+   
 
    addSolder(solder) {
       this.solders.push(solder)
    }
+   
    
    draw() {
 
@@ -141,7 +143,6 @@ export class Division {
    }
 
 
-
    createTransparentDivision() {
 
       this.transparentDivision = []
@@ -168,6 +169,7 @@ export class Division {
 
    }
 
+
    rotateTransparentDivision() {
       let a = toRad(this.transparentDivisionRotate)
       this.transparentDivision.forEach(solder => {
@@ -176,6 +178,7 @@ export class Division {
          solder.y = solder.startX * Math.sin(a) - solder.startY * Math.cos(a)
       })
    }
+
 
    drawTransparentDivision() {
 
@@ -196,11 +199,13 @@ export class Division {
       })
    }
 
+
    setMoveToForSolders() {
       if (!this.transparentDivision) return
 
-      // Преобразуем оба массива в квадтрисы
 
+
+      // Преобразуем оба массива в квадтрисы
       let transparentQuadtree = d3.quadtree()
 
       this.transparentDivision.forEach( (solder) => {      
@@ -208,7 +213,7 @@ export class Division {
       })
 
 
-
+      // Вычиляем высотку массива
       let soldersQuadtree = d3.quadtree()
       let soldersBorders = {
          top: Infinity,
@@ -222,6 +227,10 @@ export class Division {
       
          soldersQuadtree.add([solder.x, solder.y, solder])
       })
+
+
+
+
 
       let soldersHeigth = soldersBorders.bottom - soldersBorders.top
 
@@ -250,22 +259,5 @@ export class Division {
 
    }
 
-   find() {
-
-   }
-
-
-   // Начинаем перебор с левого верхнего края, постепенно приближаясь к нижнеу правому. Каждого пройденного в цикле солдата
-   // Добавляем в массив, который впоследствии возращаем (с учетом индексов, так что придется хранить переменные)
 
 };
-
-
-
-
-
-
-
-
-
-

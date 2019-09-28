@@ -9,8 +9,8 @@ export let Troops = new class Troops {
       this.players = []
 
       let solders = []
-      for (let i = 300; i < 866; i+=11) {
-         for (let j = 100; j < 840; j+=11) {
+      for (let i = 300; i < 350; i+=11) {
+         for (let j = 100; j < 200; j+=11) {
             solders.push({x:i, y:j});
          };
       };
@@ -18,8 +18,8 @@ export let Troops = new class Troops {
 
 
       solders = []
-      for (let i = 900; i < 1400; i+=11) {
-         for (let j = 100; j < 840; j+=11) {
+      for (let i = 600; i < 650; i+=11) {
+         for (let j = 100; j < 200; j+=11) {
             solders.push({x:i, y:j});
          };
       };
