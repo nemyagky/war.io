@@ -6,6 +6,9 @@ export let Troops = new class Troops {
 
    constructor() {
 
+      // Создаем двух игроков
+      // TODO. Сделать нормальное создание игроков
+
       this.players = []
 
       let solders = []

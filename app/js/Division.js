@@ -28,13 +28,14 @@ export class Division {
          this.setMoveToForSolders()
       })
    };
-   
 
+   // Добавляем солдата в текущую дивизию
    addSolder(solder) {
       this.solders.push(solder)
    }
    
-   
+   // Отрисовываем каждую дивизию
+   // Преобразуем текущую дивизию в quadtree + для каждого солдата вычисляем, двигаться ему, или стрелять
    draw() {
 
 
@@ -50,7 +51,7 @@ export class Division {
       
       if (divisionsNear) {
 
-         let soldersQuadtree = this.toQuadtree(divisionsNear)
+         let soldersQuadtree = this.toQuadtreeE(divisionsNear)
          let soldersQuadtreeSize = soldersQuadtree.size()
 
 
@@ -85,14 +86,13 @@ export class Division {
 
    };
 
-
-   getNearestDivisions() {
-
-      let nearestDivisions = [];
+   // Получаем ближайших к текущей дивизии вражеских дивизиий в зависимости от расстояния 
+   // И преобразует в массив солдат для дайнейшего удобного перебора
+   getNearestEnemies() {
+      let nearestEnemies = [];
 
       Troops.getAllEnemiesTroops(this.team).forEach(division => {
-
-         let soldersShoutDist = 2000;
+         let soldersShoutDist = 200*2;
 
          if (
             !(this.left - soldersShoutDist > division.right ||
@@ -100,43 +100,31 @@ export class Division {
              this.top - soldersShoutDist > division.bottom ||
              this.bottom + soldersShoutDist < division.top
             )
-            
          ) {
-
-            nearestDivisions.push(division)
+            division.forEach((solder) => {
+               if (!solder) return
+               nearestEnemies.push(solder)
+            })
          }
+
       });
 
-      return nearestDivisions;
-
+      return nearestEnemies;
    };
 
 
-   toQuadtree(nearestDivisions) {
+   toQuadtreeE() {
 
-      let soldersQuadtree = d3.quadtree()
-         .extent([[-1, -1], [Map.w + 1, Map.h + 1]])
+      let nearestEnemies = this.getNearestEnemies()
 
-      nearestDivisions.forEach((division) => {
-         
-         division.solders.forEach(solder => {
-
-            if (!solder) {
-               return
-            }
-
-            if (solder.hp > 0) {
-               soldersQuadtree.add([solder.x, solder.y, solder.indexes])
-            }
+      let soldersQuadtree = toQuadtree(nearestEnemies)
             
-            if (solder.x < this.borders.top) this.borders.top = solder.y
-            if (solder.x > this.borders.bottom) this.borders.bottom = solder.y
-            if (solder.y < this.borders.left) this.borders.left = solder.x
-            if (solder.y > this.borders.right) this.borders.right = solder.x
-
-         })
+      nearestEnemies.forEach(solder => {
+         if (solder.x < this.borders.top) this.borders.top = solder.y
+         if (solder.x > this.borders.bottom) this.borders.bottom = solder.y
+         if (solder.y < this.borders.left) this.borders.left = solder.x
+         if (solder.y > this.borders.right) this.borders.right = solder.x
       })
-
 
       return soldersQuadtree
 
@@ -145,28 +133,7 @@ export class Division {
 
    createTransparentDivision() {
 
-      this.transparentDivision = []
-
-      let solders = this.solders
-      let soldersInLine = 50
-
-      let y = -solders.length/2/soldersInLine*11
-      let startX = -soldersInLine/2*11
-      let maxX = soldersInLine/2*11
-      let x = startX
-      for (let i = 0; i < solders.length; i++) {
-
-         this.transparentDivision.push({x: x, y: y, startX: x, startY: y})
-
-         x += 11
-         if (x >= maxX) {
-            y+=11
-            x = startX
-         }
-
-      }
-      this.rotateTransparentDivision()
-
+      
    }
 
 
@@ -257,6 +224,19 @@ export class Division {
 
 
 
+   }
+
+   toQuadtree(array) {
+
+      let quadtree = d3.quadtree()
+
+      array.forEach(elem => {
+         if (!elem) return
+
+         quadtree.add(exem.x, elem.y, elem)
+      })
+
+      return quadtree
    }
 
 
