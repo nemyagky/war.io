@@ -32,12 +32,11 @@ export class Solder {
             )
          ) 
       {
-
+      
          let nearestEnemy = soldersQuadtree.find(this.x, this.y, 2000);
    
          if (nearestEnemy) {
-            let indexes = nearestEnemy[2];
-
+            let indexes = nearestEnemy[2].indexes;
 
             let nearestEmemyOrig = Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index]
 
