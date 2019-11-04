@@ -1,32 +1,25 @@
-import { ctx } from "./init";
-import { setColor, toRad, cursor, keyboardPressed } from "./functions";
+import { cursor } from "./functions";
 import { Troops } from './Troops';
-import {Map} from './Map'
 import * as d3 from 'd3-quadtree'
 import { TransparentDivision } from "./TransparentDivision";
+import { ctx } from "./init";
 
 
 export class Division {
    
-   constructor(team, rotate) {
+   constructor(team) {
       this.solders = [];
       this.deletedSolders = [];
       this.team = team;
-      this.rotate = rotate;
-      this.borders = {
-         top: Infinity,
-         left: Infinity,
-         right: 0,
-         bottom: 0
-      }
+
+      this.updateBorders()
       
       window.addEventListener('mousedown', () => {
-         alert(1)
-         TransparentDivision.create(this.solders)
+         this.transparentDivision = new TransparentDivision(this.solders)
       })
 
       window.addEventListener('mouseup', () => {
-         TransparentDivision.setMoving(this.solders)
+         this.transparentDivision.setMoving(this.solders)
       })
    };
 
@@ -39,56 +32,32 @@ export class Division {
    // Преобразуем текущую дивизию в quadtree + для каждого солдата вычисляем, двигаться ему, или стрелять
    draw() {
 
-      
-      this.borders = {
-         top: Infinity,
-         left: Infinity,
-         right: 0,
-         bottom: 0
-      }
+      this.updateBorders()
 
       let nearestEnemies = this.getNearestEnemies()
       
       if (nearestEnemies) {
-
          let soldersQuadtree = this.toQuadtree(nearestEnemies)
          let soldersQuadtreeSize = soldersQuadtree.size()
 
-         nearestEnemies.forEach(solder => {
-            if (solder.x < this.borders.top) this.borders.top = solder.y
-            if (solder.x > this.borders.bottom) this.borders.bottom = solder.y
-            if (solder.y < this.borders.left) this.borders.left = solder.x
-            if (solder.y > this.borders.right) this.borders.right = solder.x
-         })
-
          this.solders.forEach(solder => {
-
-            if (!solder) {
-               return
-            }
+            if (!solder) return
             
             // Должен принять quadtree врагов
-            solder.behavior(soldersQuadtree, soldersQuadtreeSize, this.borders, this.rotate)
-
+            solder.behavior(soldersQuadtree, soldersQuadtreeSize, this.borders)
             solder.draw()
          });
-
-
       } else {
-
          this.solders.forEach(solder => {
             if (!solder) return
 
             solder.move()
             solder.draw()
-
          })
-
       }
 
-
       if (cursor.isPressed) {
-         TransparentDivision.draw()
+         this.transparentDivision.draw()
       }
 
    };
@@ -99,13 +68,11 @@ export class Division {
       let nearestEnemies = [];
 
       Troops.getAllEnemiesTroops(this.team).forEach(division => {
-         let soldersShoutDist = 200*2;
-
          if (
-            !(this.left - soldersShoutDist > division.right ||
-             this.right + soldersShoutDist < division.left ||
-             this.top - soldersShoutDist > division.bottom ||
-             this.bottom + soldersShoutDist < division.top
+            !(this.borders.left > division.borders.right ||
+             this.borders.right < division.borders.left ||
+             this.borders.top > division.borders.bottom ||
+             this.borders.bottom < division.borders.top
             )
          ) {
             division.solders.forEach((solder) => {
@@ -113,7 +80,6 @@ export class Division {
                nearestEnemies.push(solder)
             })
          }
-
       });
 
       return nearestEnemies;
@@ -121,7 +87,6 @@ export class Division {
 
    
    toQuadtree(array) {
-
       let quadtree = d3.quadtree()
 
       array.forEach(elem => {
@@ -133,5 +98,25 @@ export class Division {
       return quadtree
    }
 
+
+   updateBorders() {
+      // borders - границы дивизии + расстояние стрельбы солдат
+      this.borders = {
+         top: Infinity,
+         left: Infinity,
+         right: 0,
+         bottom: 0
+      }
+
+      this.solders.forEach(solder => {
+         if (solder.x - solder.shootDist < this.borders.left) this.borders.left = solder.x - solder.shootDist
+         if (solder.x + solder.shootDist > this.borders.right) this.borders.right = solder.x + solder.shootDist
+         if (solder.y - solder.shootDist < this.borders.top) this.borders.top = solder.y - solder.shootDist
+         if (solder.y + solder.shootDist > this.borders.bottom) this.borders.bottom = solder.y + solder.shootDist
+      })
+
+      ctx.fillRect(this.borders.left, this.borders.top, this.borders.right-this.borders.left,this.borders.bottom-this.borders.top)
+      ctx.stroke()
+   }
 
 };

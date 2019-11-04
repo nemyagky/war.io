@@ -13,7 +13,7 @@ export let Troops = new class Troops {
 
       let solders = []
       for (let i = 300; i < 350; i+=11) {
-         for (let j = 100; j < 200; j+=11) {
+         for (let j = 100; j < 150; j+=11) {
             solders.push({x:i, y:j});
          };
       };
@@ -21,8 +21,8 @@ export let Troops = new class Troops {
 
 
       solders = []
-      for (let i = 600; i < 650; i+=11) {
-         for (let j = 100; j < 200; j+=11) {
+      for (let i = 1700; i < 1750; i+=11) {
+         for (let j = 100; j < 150; j+=11) {
             solders.push({x:i, y:j});
          };
       };

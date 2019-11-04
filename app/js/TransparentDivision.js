@@ -1,26 +1,29 @@
-import { keyboardPressed, setColor } from "./functions"
+import { keyboardPressed, setColor, cursor, toRad } from "./functions"
 import { Troops } from "./Troops"
 import * as d3 from 'd3-quadtree'
+import { ctx } from "./init"
 
-export let TransparentDivision = new class TransparentDivision {
+export class TransparentDivision {
 
-   constructor() {
+   constructor(solders) {
       // TODO delete method
-      this.rotate = 0
+      this.rotateAngle = 0
+
+      this.create(solders)
+      
    }
 
    create(solders) {
 
-      this.solders = solders
+      this.solders = []
 
-      const soldersInLine = 50
+      const soldersInLine = 25
 
-      let y = -this.solders.length/2/soldersInLine*11
+      let y = -solders.length/2/soldersInLine*11
       let startX = -soldersInLine/2*11
       let maxX = soldersInLine/2*11
       let x = startX
-      for (let i = 0; i < this.solders.length; i++) {
-
+      for (let i = 0; i < solders.length; i++) {
          this.solders.push({x: x, y: y, startX: x, startY: y})
 
          x += 11
@@ -35,7 +38,7 @@ export let TransparentDivision = new class TransparentDivision {
    }
 
    rotate() {
-      let a = toRad(this.rotate)
+      let a = toRad(this.rotateAngle)
       this.solders.forEach(solder => {
          solder.x = solder.startX * Math.cos(a) + solder.startY * Math.sin(a)
          solder.y = solder.startX * Math.sin(a) - solder.startY * Math.cos(a)
@@ -44,13 +47,11 @@ export let TransparentDivision = new class TransparentDivision {
 
    draw() {
       if (!this.solders) return
-
-      alert(1)
       
       
       if (keyboardPressed.w) {
          //this.createTransparentDivision()
-         this.rotate += 3
+         this.rotateAngle += 3
          this.rotate()
       }
 
@@ -64,6 +65,7 @@ export let TransparentDivision = new class TransparentDivision {
 
    setMoving(solders) {
       if (!this.solders) return
+
 
 
       // Преобразуем оба массива в квадтрисы
@@ -92,17 +94,18 @@ export let TransparentDivision = new class TransparentDivision {
 
 
 
-
       let soldersHeigth = soldersBorders.bottom - soldersBorders.top
 
       let startY = soldersBorders.top
       let yNow = startY
       let transparentStart = -transparentQuadtree.find(-1000, -1000)[1]
 
-      
       for (let i = 0; i < this.solders.length; i++) {
 
+
          let currentSolder = soldersQuadtree.find(0, yNow)
+
+         
          let currentPlace = transparentQuadtree.find(-1000, currentSolder[1] - startY - transparentStart)
 
          let indexes = currentSolder[2].indexes

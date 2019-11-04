@@ -1,4 +1,4 @@
-import {toRad, rand, setColor, Round10, rotate} from './functions';
+import {toRad, rand, setColor, Round10, rotate, getDistBetween2dots} from './functions';
 import { Troops } from './Troops';
 import { ctx } from './init';
 
@@ -9,31 +9,44 @@ export class Solder {
    }
 
 
-   behavior(soldersQuadtree, soldersSize, soldresDivisionBorders) {
-      
-      if (soldersSize) {
-         this.shoot(soldersQuadtree, soldresDivisionBorders)
-      } else {
-         this.move(soldresDivisionBorders)
-      }
-      
+   behavior(soldersQuadtree, soldersSize) {
 
+      if (this.moveTo) {
+
+         if (soldersSize != 0) {
+            let nearestEnemy = soldersQuadtree.find(this.x, this.y);
+
+            if (getDistBetween2dots([this.x, this.y], [nearestEnemy[0], nearestEnemy[1]]) < this.shootDist) {
+               
+            } else {
+               this.setRotateTo(nearestEnemy[0], nearestEnemy[1])
+               this.move()
+            }
+
+         } else {
+            this.move()
+         } 
+      }
+
+      // if (soldersSize) {
+      //    this.shoot(soldersQuadtree, soldresDivisionBorders)
+      // } else {
+      //    this.move(soldresDivisionBorders)
+      // }
    }
 
 
    shoot(soldersQuadtree, soldresDivisionBorders) {
-      let soldersShoutDist = 2000
       
       if (
-         !(this.x - soldersShoutDist > soldresDivisionBorders.right ||
-            this.x + soldersShoutDist < soldresDivisionBorders.left ||
-            this.y - soldersShoutDist > soldresDivisionBorders.bottom ||
-            this.y + soldersShoutDist < soldresDivisionBorders.top
-            )
-         ) 
-      {
+         !(this.x - this.shootDist > soldresDivisionBorders.right ||
+            this.x + this.shootDist < soldresDivisionBorders.left ||
+            this.y - this.shootDist > soldresDivisionBorders.bottom ||
+            this.y + this.shootDist < soldresDivisionBorders.top
+          )
+      ) {
       
-         let nearestEnemy = soldersQuadtree.find(this.x, this.y, 2000);
+         let nearestEnemy = soldersQuadtree.find(this.x, this.y, this.shootDist);
    
          if (nearestEnemy) {
             let indexes = nearestEnemy[2].indexes;
@@ -56,6 +69,41 @@ export class Solder {
       }
    }
 
+
+   // shoot(soldersQuadtree, soldresDivisionBorders) {
+      
+   //    if (
+   //       !(this.x - this.shootDist > soldresDivisionBorders.right ||
+   //          this.x + this.shootDist < soldresDivisionBorders.left ||
+   //          this.y - this.shootDist > soldresDivisionBorders.bottom ||
+   //          this.y + this.shootDist < soldresDivisionBorders.top
+   //        )
+   //    ) {
+      
+   //       let nearestEnemy = soldersQuadtree.find(this.x, this.y, this.shootDist);
+   
+   //       if (nearestEnemy) {
+   //          let indexes = nearestEnemy[2].indexes;
+
+   //          let nearestEmemyOrig = Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index]
+
+   //          if (!nearestEmemyOrig) return
+
+   //          nearestEmemyOrig.hp -= rand(0, 3)
+
+   //          if ( nearestEmemyOrig.hp <= 0 ) {
+   //             soldersQuadtree.remove(nearestEnemy)
+   //             Troops.players[indexes.player].divisions[indexes.division].solders[indexes.index] = null
+   //          }
+   //       } else {
+   //          this.move()
+   //       }
+   //    } else {
+   //       this.move()
+   //    }
+   // }
+
+
    setRotateTo(x, y) {
       this.moveTo = {
          x: x,
@@ -65,9 +113,9 @@ export class Solder {
       this.speed = 3
    }
 
-   move() {
 
-      if (!this.moveTo || !this.rotate) return
+   move() {
+      if (this.moveTo === undefined || this.rotate === undefined) return
 
       this.x += Math.cos(toRad(this.rotate))*this.speed;
       this.y += Math.sin(toRad(this.rotate))*this.speed;
@@ -76,8 +124,11 @@ export class Solder {
          this.speed = 0;
          this.x = this.moveTo.x
          this.y = this.moveTo.y
+
+         this.moveTo = undefined
       }
    }
+
 
    draw() {
       setColor(this.team);
@@ -87,4 +138,5 @@ export class Solder {
       ctx.restore()
    }
 
+   
 }

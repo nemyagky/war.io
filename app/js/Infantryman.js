@@ -2,6 +2,7 @@ import { Solder } from "./Solder";
 
 export class Infantryman extends Solder {
 
+   
    constructor(x, y, team, solderIndexes ) {
 
       super()
@@ -17,6 +18,8 @@ export class Infantryman extends Solder {
       this.team = team
       this.speed = 0
       this.rotate = 90
+
+      this.shootDist = 200
 
       this.indexes = {
          player: solderIndexes.player,
