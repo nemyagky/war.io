@@ -3,28 +3,21 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "webpack-dev-server --mode development --open",
+    "start": "webpack-dev-server --open",
     "build": "webpack --mode production"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.4",
-    "@babel/preset-env": "^7.5.4",
-    "babel-loader": "^8.0.6",
-    "babel-plugin-transform-class-properties": "^6.24.1",
     "css-loader": "^3.0.0",
-    "extract-text-webpack-plugin": "^4.0.0-beta.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
+    "typescript": "^3.7.3",
+    "tslint": "^5.20.1",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
-    "d3-quadtree": "^1.0.6",
-    "js-quadtree": "^2.0.1",
-    "lodash.sortby": "^4.7.0",
-    "path": "^0.12.7",
-    "quadtree-lib": "^1.0.9"
+    "d3-quadtree": "^1.0.6"
   }
 }
