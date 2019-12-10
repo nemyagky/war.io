@@ -8,7 +8,9 @@
       "no-console": false,
       "trailing-comma": [
          false
-      ]
+      ],
+      "object-literal-sort-keys": false,
+      "interface-name": false
    },
    "rulesDirectory": []
 }

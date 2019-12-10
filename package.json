@@ -7,12 +7,14 @@
     "build": "webpack --mode production"
   },
   "devDependencies": {
+    "awesome-typescript-loader": "^5.2.1",
     "css-loader": "^3.0.0",
     "node-sass": "^4.12.0",
     "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
-    "typescript": "^3.7.3",
+    "ts-node": "^8.5.4",
     "tslint": "^5.20.1",
+    "typescript": "^3.7.3",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"

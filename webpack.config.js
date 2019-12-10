@@ -1,28 +1,29 @@
-const path = require('path')
+const path = require('path');
 
-module.exports = (paths) => {
-   return {
-      entry: './app/js/gameloop.ts',
-      output: {
-         'path': path.resolve(__dirname, './dist'),
-         'filename': 'main.js',
-         publicPath: 'dist/'
-      },
-      devServer: {
-         overlay: true
-      },
-      module: {
-         rules: [
-            {
-               test: /\.scss$/,
-               include: paths,
-               use: [
-                  'style-loader',
-                  'css-loader',
-                  'sass-loader'
-               ]
-            }
-         ]
-      },
-   }
-}
+module.exports = {
+   entry: './app/js/Gameloop.ts',
+   output: {
+      filename: 'main.js',
+      path: path.resolve(__dirname, 'dist')
+   },
+   module: {
+      rules: [
+         {
+            test: /\.ts$/,
+            loader: 'awesome-typescript-loader',
+            exclude: /node_modules/,
+         },
+         {
+            test: /\.scss$/,
+            use: [
+               'style-loader',
+               'css-loader',
+               'sass-loader'
+            ]
+         },
+      ]
+   },
+   resolve: {
+      extensions: [".tsx", ".ts", ".js"]
+   },
+};
