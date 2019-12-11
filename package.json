@@ -20,6 +20,6 @@
     "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
-    "d3-quadtree": "^1.0.6"
+    "d3-quadtree": "^1.0.7"
   }
 }

@@ -2,9 +2,9 @@ import { Keyboard } from "./Common/Keyboard";
 
 export const Camera = new class CameraSingleton {
 
-   private x: number = 0;
-   private y: number = 0;
-   private movingSpeed: number = 10;
+   public x: number = 0;
+   public y: number = 0;
+   private movingSpeed: number = 5;
 
    public move() {
       this.changePosition();

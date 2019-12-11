@@ -5,7 +5,8 @@
       "module": "esnext",
       "removeComments": true,
       "outDir": "js",
-      "sourceMap": true
+      "sourceMap": true,
+      "moduleResolution": "node"
    },
    "exclude": [
       "node_modules"
