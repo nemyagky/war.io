@@ -24,20 +24,32 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
    }
 
    /** When user up the cursor */
-   // TODO normal setMovingCordsForSolders function
+   // TODO comment this
    public setMovingCordsForSolders() {
+
       const realSoldersQuadtree = d3.quadtree();
+
+      let realSoldersLeftBorder = Infinity;
+      let realSoldersTopBorder = Infinity;
+
       this.division.solders.forEach((solder: Solder) => {
          realSoldersQuadtree.add([solder.x, solder.y, solder]);
+
+         if (solder.x < realSoldersLeftBorder) { realSoldersLeftBorder = solder.x; }
+         if (solder.y < realSoldersTopBorder) { realSoldersTopBorder = solder.y; }
       });
 
-      this.estimatedSolders.forEach((row: Solder[]) => {
+      this.estimatedSolders.forEach((row) => {
          row.forEach((solder: { x: number, y: number }) => {
-            const nearestSolderData = realSoldersQuadtree.find(0, 0);
-            const nearestSolder: Solder = nearestSolderData[2];
+            const lastRow = this.estimatedSolders[this.estimatedSolders.length - 1];
 
-            nearestSolder.setMoveTo(Cursor.x + solder.x + Camera.x, Cursor.y + solder.y + Camera.y);
-            realSoldersQuadtree.remove(nearestSolderData);
+            const nearestSolder: Solder = realSoldersQuadtree.find(
+               solder.x + row[row.length - 1].x + realSoldersLeftBorder,
+               solder.y + lastRow[lastRow.length - 1].y + realSoldersTopBorder - 11,
+            );
+
+            nearestSolder[2].setMoveTo(solder.x + Cursor.x, solder.y + Cursor.y);
+            realSoldersQuadtree.remove(nearestSolder);
          });
       });
 
@@ -63,7 +75,7 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
     * ]
     */
    private createEstimatedSolders() {
-      const soldersInLine = 34;
+      const soldersInLine = 35;
 
       // lastSolderIndex used to limit i in forEach loop (from 0 to soldersInLine)
       let lastSolderIndex = 0;

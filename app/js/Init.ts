@@ -25,6 +25,7 @@ export const Init = new class InitSingleton {
          }
       }
       solders.forEach((solder) => this.players[this.players.length - 1].addSolder(solder.x, solder.y));
+      this.players[this.players.length - 1].addSolder(0, 0);
    }
 
 }();
