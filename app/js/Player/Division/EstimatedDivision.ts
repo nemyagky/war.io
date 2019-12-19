@@ -8,101 +8,76 @@ import { EstimateSolder } from "./../../Interfaces/EstimateSolder";
 import { Division } from "./Division";
 import { Solder } from "./Solders/Solder";
 
-/** Estimated - планируемый */
 export const EstimatedDivision = new class EstimatedDivisionSingleton {
 
    private division: Division;
    private estimatedSolders: EstimateSolder[][] = [];
-   private rotateAngle: number = 0;
+   private soldersInLine: number = 35;
+   /**
+    * Function, responsible for moving solders, work's worse, if rotateAngle equal 0 or 180.
+    * But if it equal to 0.01 - it work correct
+    */
+   private rotateAngle: number = 0.01;
 
    public isExist() {
       return this.estimatedSolders.length;
    }
 
    /**
-    * Create matrix of solders. In the end it will call this.translateRelativeToCursor()
+    * Create an array of solders. In future they will be drawn relative to cursor,
+    * So, we need to subtract a half from every solder.
     */
    public create(division: Division) {
       this.division = division;
 
-      const soldersInLine = 35;
+      // If division.solders.length = 15, soldersInLine = 2, than soldersInWidth = 2, soldersInHeight = roundUp 15/2 = 8
+      const soldersInWidth = this.division.solders.length > this.soldersInLine
+         ? this.soldersInLine : this.division.solders.length;
+      const soldersInHeight: number = Math.floor(this.division.solders.length / this.soldersInLine);
 
-      this.division.solders.forEach((solder: Solder, i: number) => {
+      for (let i = 0; i < this.division.solders.length; i++) {
          // Create new row if current row is filled
-         if (i % soldersInLine === 0) { this.estimatedSolders.push([]); }
+         if (i % this.soldersInLine === 0) { this.estimatedSolders.push([]); }
 
          this.estimatedSolders[this.estimatedSolders.length - 1].push({
-            // (i % soldersInLine) defines x solder cords (it returns value from 0 to soldersInLine)
-            x: (i % soldersInLine) * 11,
-            y: (this.estimatedSolders.length - 1) * 11,
-            startX: (i % soldersInLine) * 11,
-            startY: (this.estimatedSolders.length - 1) * 11
+            // i % soldersInLine - min 0, max soldersInLine. Than subdivide a half to position relative to cursor
+            // 11 - solder width
+            x: ((i % this.soldersInLine) * 11) - ((soldersInWidth / 2) * 11),
+            startX: ((i % this.soldersInLine) * 11) - ((soldersInWidth / 2) * 11),
+            // this.estimatedSolders.length-1 - current solders rows count. Than subdivide a half
+            y: ((this.estimatedSolders.length - 1) * 11) - ((soldersInHeight / 2) * 11),
+            startY: ((this.estimatedSolders.length - 1) * 11) - ((soldersInHeight / 2) * 11)
          });
-      });
+      }
 
-      this.translateRelativeToCursor();
+      this.rotate();
    }
 
    /**
-    * When user up the cursor
-    * The main idea of function is to overlay (наложить) realSolders and estimatedSolders and than for
-    * Every estimatedSolders find the nearest realSolder
+    * The main idea of the function is to find nearest solder in realSoldersQuadtree and estimatedSoldersQuadtree
+    * And than for every nearestRealSolder set move to nearestEstimatedSolder
     */
    public setMovingCordsForSolders() {
-      const realSoldersQuadtree = d3.quadtree();
-
-      let realSoldersLeftBorder = Infinity;
-      let realSoldersTopBorder = Infinity;
-
-      // Creating realSoldersQuadtree, calculate it's left and top borders (we will use it later)
-      this.division.solders.forEach((solder: Solder) => {
-         realSoldersQuadtree.add([solder.x, solder.y, solder]);
-
-         if (solder.x < realSoldersLeftBorder) { realSoldersLeftBorder = solder.x; }
-         if (solder.y < realSoldersTopBorder) { realSoldersTopBorder = solder.y; }
-      });
-
-      let maxX = 0;
-      let maxY = 0;
+      const realSoldersQuadtree = this.createRealSoldersQuadtree();
+      const estimatedSoldersQuadtree = this.createEstimatedSoldersQuadtree();
 
       this.estimatedSolders.forEach((row) => {
-         row.forEach((solder: EstimateSolder) => {
-            if (solder.x > maxX) { maxX = solder.x; }
-            if (solder.y > maxY) { maxY = solder.y; }
-         });
-      });
-
-      // For every estimatedSolders find the nearest realSolder
-      this.estimatedSolders.forEach((row) => {
-         row.forEach((solder: EstimateSolder) => {
-            const lastRow = this.estimatedSolders[this.estimatedSolders.length - 1];
-
-            const nearestSolder: Solder = realSoldersQuadtree.find(
-               /**
-                * We need plus row[row.length - 1].x, because estimatedSolders has negative cords
-                * (because estimatedSolders must be drawing relative to cursor)
-                * By adding row[row.length - 1].x, we will transform negative cord to cords, starting 0
-                * AS EXAMPLE:
-                * solder.x = -150 (current solder = -150)
-                * row[row.length - 1].x = 150 (last solder in row = 150)
-                * result will be equal to 0
-                * Than we add realSoldersLeftBorder to overlay realSolders and estimatedSolders
-                */
-               solder.x + maxX + realSoldersLeftBorder,
-               solder.y + maxY + realSoldersTopBorder,
+         row.forEach(() => {
+            const nearestRealSolder = realSoldersQuadtree.find(
+               realSoldersQuadtree.left, realSoldersQuadtree.top
+            );
+            const nearestEstimatedSolder = estimatedSoldersQuadtree.find(
+               estimatedSoldersQuadtree.left, estimatedSoldersQuadtree.top
             );
 
-            // console.log(solder.x, maxX, realSoldersLeftBorder);
-            // console.log(solder.y, maxY, realSoldersTopBorder);
-            // alert(1)
+            nearestRealSolder[2].setMoveTo(
+               nearestEstimatedSolder[2].x + Cursor.x + Camera.x,
+               nearestEstimatedSolder[2].y + Cursor.y + Camera.y
+            );
 
-            // console.log(solder, nearestSolder);
-            // console.log(lastRow[lastRow.length - 1].y);
-            // alert();
-
-            nearestSolder[2].setMoveTo(solder.x + Cursor.x + Camera.x, solder.y + Cursor.y + Camera.y);
-            // Remove nearestSolder from realSoldersQuadtree to avoid re-finding the same solder
-            realSoldersQuadtree.remove(nearestSolder);
+            // Remove quadtree's items to avoid re-finding the same solder
+            realSoldersQuadtree.remove(nearestRealSolder);
+            estimatedSoldersQuadtree.remove(nearestEstimatedSolder);
          });
       });
 
@@ -112,8 +87,10 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
    public draw() {
       Common.setColor("rgba(0,0,255,0.5)");
 
-      if (Keyboard.pressed.w) { this.rotateAngle--; }
-      this.rotate();
+      if (Keyboard.pressed.w) {
+         this.rotateAngle--;
+         this.rotate();
+      }
 
       this.estimatedSolders.forEach((row) => {
          row.forEach((solder: EstimateSolder) => {
@@ -122,40 +99,50 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
       });
    }
 
-   /**
-    * Subtract a half from every estimatedSolder cords.
-    * Than it will be used to render estimatedSolders relative to cursor
-    */
-   private translateRelativeToCursor() {
-      const firstRow = this.estimatedSolders[0];
-      const lastRow = this.estimatedSolders[this.estimatedSolders.length - 1];
-      // Translate will contain a half of estimatedSolders width/height
-      const translate = {
-         x: firstRow[firstRow.length - 1].x / 2,
-         y: lastRow[lastRow.length - 1].y / 2,
-         startX: firstRow[firstRow.length - 1].x / 2,
-         startY: firstRow[firstRow.length - 1].x / 2,
-      };
-
-      this.estimatedSolders.forEach((row) => {
-         row.forEach((solder: EstimateSolder) => {
-            solder.x -= translate.x;
-            solder.y -= translate.y;
-            solder.startX -= translate.x;
-            solder.startY -= translate.y;
-         });
-      });
-   }
-
    private rotate() {
-
       const a = Common.toRad(this.rotateAngle);
+
       this.estimatedSolders.forEach((row) => {
          row.forEach((solder: EstimateSolder) => {
             solder.x = solder.startX * Math.cos(a) + solder.startY * Math.sin(a);
             solder.y = solder.startY * Math.cos(a) - solder.startX * Math.sin(a);
          });
       });
+   }
+
+   private createRealSoldersQuadtree() {
+      const realSoldersQuadtree = d3.quadtree();
+
+      realSoldersQuadtree.top = Infinity;
+      realSoldersQuadtree.left = Infinity;
+
+      // Creating realSoldersQuadtree, calculate it's left and top borders (we will use it later)
+      this.division.solders.forEach((solder: Solder) => {
+         realSoldersQuadtree.add([solder.x, solder.y, solder]);
+
+         if (solder.x < realSoldersQuadtree.left) { realSoldersQuadtree.left = solder.x; }
+         if (solder.y < realSoldersQuadtree.top) { realSoldersQuadtree.top = solder.y; }
+      });
+
+      return realSoldersQuadtree;
+   }
+
+   private createEstimatedSoldersQuadtree() {
+      const estimatedSoldersQuadtree = d3.quadtree();
+
+      estimatedSoldersQuadtree.top = Infinity;
+      estimatedSoldersQuadtree.left = Infinity;
+
+      this.estimatedSolders.forEach((row) => {
+         row.forEach((solder: EstimateSolder) => {
+            estimatedSoldersQuadtree.add([solder.x, solder.y, solder]);
+
+            if (solder.x < estimatedSoldersQuadtree.left) { estimatedSoldersQuadtree.left = solder.x; }
+            if (solder.y < estimatedSoldersQuadtree.top) { estimatedSoldersQuadtree.top = solder.y; }
+         });
+      });
+
+      return estimatedSoldersQuadtree;
    }
 
 }();
