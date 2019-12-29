@@ -1,4 +1,6 @@
+import * as d3 from "d3-quadtree";
 import { ctx } from "../canvas";
+import { QuadtreeItem } from "./../Interfaces/QuadtreeItem.interface";
 
 export const Common = new class CommonSingleton {
 
@@ -78,6 +80,32 @@ export const Common = new class CommonSingleton {
     const b = dot1[1] - dot2[1];
 
     return Math.sqrt(a * a + b * b);
+  }
+
+  public toQuadtree(array: QuadtreeItem[]) {
+    const quadtree = d3.quadtree();
+
+    array.forEach((item: QuadtreeItem) => {
+      quadtree.add([item.x, item.y, item]);
+    });
+
+    return quadtree;
+  }
+
+  public toQuadtreeWithBorders(array: QuadtreeItem[]) {
+    const quadtree = d3.quadtree();
+
+    quadtree.top = Infinity;
+    quadtree.left = Infinity;
+
+    array.forEach((item: QuadtreeItem) => {
+      quadtree.add([item.x, item.y, item]);
+
+      if (item.x < quadtree.left) { quadtree.left = item.x; }
+      if (item.y < quadtree.top) { quadtree.top = item.y; }
+    });
+
+    return quadtree;
   }
 
 }();

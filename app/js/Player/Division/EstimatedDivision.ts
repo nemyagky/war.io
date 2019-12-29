@@ -1,10 +1,9 @@
-import * as d3 from "d3-quadtree";
 import { Keyboard } from "../../Common/Keyboard";
+import { EstimateSolder } from "../../Interfaces/EstimateSolder.interface";
 import { Camera } from "./../../Camera";
 import { ctx } from "./../../canvas";
 import { Common } from "./../../Common/Common";
 import { Cursor } from "./../../Common/Cursor";
-import { EstimateSolder } from "./../../Interfaces/EstimateSolder";
 import { Division } from "./Division";
 import { Solder } from "./Solders/Solder";
 
@@ -58,8 +57,11 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
     * And than for every nearestRealSolder set move to nearestEstimatedSolder
     */
    public setMovingCordsForSolders() {
-      const realSoldersQuadtree = this.createRealSoldersQuadtree();
-      const estimatedSoldersQuadtree = this.createEstimatedSoldersQuadtree();
+      const realSoldersQuadtree = Common.toQuadtreeWithBorders(this.division.solders);
+      // Transform EstimateSolder[][] into EstimateSolder[]
+      const estimatedSoldersQuadtree = Common.toQuadtreeWithBorders(
+         Array.prototype.concat.apply([], this.estimatedSolders)
+      );
 
       this.estimatedSolders.forEach((row) => {
          row.forEach(() => {
@@ -108,41 +110,6 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
             solder.y = solder.startY * Math.cos(a) - solder.startX * Math.sin(a);
          });
       });
-   }
-
-   private createRealSoldersQuadtree() {
-      const realSoldersQuadtree = d3.quadtree();
-
-      realSoldersQuadtree.top = Infinity;
-      realSoldersQuadtree.left = Infinity;
-
-      // Creating realSoldersQuadtree, calculate it's left and top borders (we will use it later)
-      this.division.solders.forEach((solder: Solder) => {
-         realSoldersQuadtree.add([solder.x, solder.y, solder]);
-
-         if (solder.x < realSoldersQuadtree.left) { realSoldersQuadtree.left = solder.x; }
-         if (solder.y < realSoldersQuadtree.top) { realSoldersQuadtree.top = solder.y; }
-      });
-
-      return realSoldersQuadtree;
-   }
-
-   private createEstimatedSoldersQuadtree() {
-      const estimatedSoldersQuadtree = d3.quadtree();
-
-      estimatedSoldersQuadtree.top = Infinity;
-      estimatedSoldersQuadtree.left = Infinity;
-
-      this.estimatedSolders.forEach((row) => {
-         row.forEach((solder: EstimateSolder) => {
-            estimatedSoldersQuadtree.add([solder.x, solder.y, solder]);
-
-            if (solder.x < estimatedSoldersQuadtree.left) { estimatedSoldersQuadtree.left = solder.x; }
-            if (solder.y < estimatedSoldersQuadtree.top) { estimatedSoldersQuadtree.top = solder.y; }
-         });
-      });
-
-      return estimatedSoldersQuadtree;
    }
 
 }();

@@ -4,13 +4,16 @@ import { Infantryman } from "./Division/Solders/Infantryman";
 
 export class Player {
 
+   public id: number;
+   public divisions: Division[] = [];
+   public enemiesDivisions: Division[] = [];
    private team: string;
    private isMainPlayer: boolean;
    private chosenDivision: number = 0;
-   private divisions: Division[] = [];
 
-   constructor(team: string, isMainPlayer: boolean) {
+   constructor(team: string, id: number, isMainPlayer?: boolean) {
       this.team = team;
+      this.id = id;
       this.isMainPlayer = isMainPlayer;
       this.addDivision();
 
@@ -19,8 +22,11 @@ export class Player {
       }
    }
 
-   public drawTroops() {
-      this.divisions.forEach((division: Division) => division.draw());
+   public draw(enemiesDivisions: Division[]) {
+      this.divisions.forEach((division: Division) => {
+         // Division use an array of enemiesDivisions
+         division.draw(enemiesDivisions);
+      });
 
       if (EstimatedDivision.isExist()) {
          EstimatedDivision.draw();

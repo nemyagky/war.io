@@ -18,9 +18,8 @@ export class Solder {
       this.team = team;
    }
 
-   public draw() {
+   public draw(enemiesSoldersQuadtree, enemiesSoldersLength: number) {
       Common.setColor(this.team);
-
       this.move();
 
       Common.rotateCanvasCtx(this.x, this.y, this.rotate);
