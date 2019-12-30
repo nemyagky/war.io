@@ -1,4 +1,4 @@
-import { ctx } from "../canvas";
+import { ctx } from "./Shared/Ctx";
 
 export const Map = new class MapSingleton {
 

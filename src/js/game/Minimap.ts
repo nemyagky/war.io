@@ -1,4 +1,4 @@
-import { canvas, ctx } from "../canvas";
+import { canvas, ctx } from "./Shared/Ctx";
 
 export const MiniMap = new class MiniMapSingleton {
 

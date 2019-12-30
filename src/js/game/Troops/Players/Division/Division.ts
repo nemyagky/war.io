@@ -1,6 +1,5 @@
-import { Common } from "../../Common/Common";
-import { Borders } from "../../Interfaces/Borders.interface";
-import { Player } from "./../Player";
+import { Borders } from "../../../../interfaces/Borders.interface";
+import { Functions } from "../../../Shared/Functions";
 import { Infantryman } from "./Solders/Infantryman";
 import { Solder } from "./Solders/Solder";
 
@@ -21,7 +20,7 @@ export class Division {
    }
 
    public draw(enemiesDivisions: Division[]) {
-      const enemiesSoldersQuadtree = Common.toQuadtree(Array.prototype.concat.apply([], enemiesDivisions));
+      const enemiesSoldersQuadtree = Functions.toQuadtree(Array.prototype.concat.apply([], enemiesDivisions));
       const enemiesSoldersLength = enemiesSoldersQuadtree.size();
 
       this.solders.forEach((solder: Solder) => {

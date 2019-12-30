@@ -1,4 +1,4 @@
-import { KeyboardKeys } from "./../Interfaces/Keyboard.interface";
+import { KeyboardKeys } from "../../interfaces/Keyboard.interface";
 
 export const Keyboard = new class KeyboardSingleton {
 

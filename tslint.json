@@ -10,7 +10,11 @@
          false
       ],
       "object-literal-sort-keys": false,
-      "interface-name": false
+      "interface-name": false,
+      "array-type": [
+         true,
+         "array"
+      ]
    },
    "rulesDirectory": []
 }

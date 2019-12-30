@@ -1,8 +1,8 @@
 import * as d3 from "d3-quadtree";
-import { ctx } from "../canvas";
-import { QuadtreeItem } from "./../Interfaces/QuadtreeItem.interface";
+import { QuadtreeItem } from "../../interfaces/QuadtreeItem.interface";
+import { ctx } from "./Ctx";
 
-export const Common = new class CommonSingleton {
+export const Functions = new class FunctionsSingleton {
 
   private ctxColor: string;
 
@@ -18,7 +18,7 @@ export const Common = new class CommonSingleton {
     ctx.fillText("FPS: " + this.countFPS(), 10, 80);
   }
 
-  public countFPS() {
+  public countFPS(): number {
     const currentLoop = new Date().getMilliseconds();
 
     if (this.prevRenderTime > currentLoop) {
@@ -42,7 +42,7 @@ export const Common = new class CommonSingleton {
   }
 
   /** @param a Angle in radians */
-  public toDegrees(a: number) {
+  public toDegrees(a: number): number {
     return a * 180 / Math.PI;
   }
 
@@ -82,6 +82,7 @@ export const Common = new class CommonSingleton {
     return Math.sqrt(a * a + b * b);
   }
 
+  // TODO delete this function
   public toQuadtree(array: QuadtreeItem[]) {
     const quadtree = d3.quadtree();
 
@@ -106,6 +107,14 @@ export const Common = new class CommonSingleton {
     });
 
     return quadtree;
+  }
+
+  /**
+   * Transform array of arrays into array [][] => []
+   * @param multidimensionalArray array of arrays
+   */
+  public toOneDimensionalArray(multidimensionalArray: any[][]): [] {
+    return Array.prototype.concat.apply([], multidimensionalArray);
   }
 
 }();

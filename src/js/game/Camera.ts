@@ -1,4 +1,4 @@
-import { Keyboard } from "./Common/Keyboard";
+import { Keyboard } from "./Shared/Keyboard";
 
 export const Camera = new class CameraSingleton {
 

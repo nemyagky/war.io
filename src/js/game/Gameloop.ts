@@ -1,10 +1,8 @@
-import "./../scss/main.scss";
+import "../../scss/main.scss";
 import { Camera } from "./Camera";
-import { canvas, ctx } from "./canvas";
-import { Common } from "./Common/Common";
-import { Init } from "./Init";
-
-Init.init();
+import { canvas, ctx } from "./Shared/Ctx";
+import { Functions } from "./Shared/Functions";
+import { Troops } from "./Troops/Troops";
 
 const Gameloop = new class GameloopSingleton {
 
@@ -19,11 +17,11 @@ const Gameloop = new class GameloopSingleton {
       ctx.save();
       ctx.translate(-Camera.x, -Camera.y);
 
-      Init.drawPlayers();
+      Troops.draw();
 
       ctx.restore();
 
-      Common.drawFps();
+      Functions.drawFps();
 
       requestAnimationFrame(this.render.bind(this));
    }

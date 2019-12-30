@@ -1,11 +1,10 @@
-import { Keyboard } from "../../Common/Keyboard";
-import { EstimateSolder } from "../../Interfaces/EstimateSolder.interface";
-import { Camera } from "./../../Camera";
-import { ctx } from "./../../canvas";
-import { Common } from "./../../Common/Common";
-import { Cursor } from "./../../Common/Cursor";
+import { EstimateSolder } from "../../../../interfaces/EstimateSolder.interface";
+import { Camera } from "../../../Camera";
+import { ctx } from "../../../Shared/Ctx";
+import { Cursor } from "../../../Shared/Cursor";
+import { Functions } from "../../../Shared/Functions";
+import { Keyboard } from "../../../Shared/Keyboard";
 import { Division } from "./Division";
-import { Solder } from "./Solders/Solder";
 
 export const EstimatedDivision = new class EstimatedDivisionSingleton {
 
@@ -57,9 +56,9 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
     * And than for every nearestRealSolder set move to nearestEstimatedSolder
     */
    public setMovingCordsForSolders() {
-      const realSoldersQuadtree = Common.toQuadtreeWithBorders(this.division.solders);
+      const realSoldersQuadtree = Functions.toQuadtreeWithBorders(this.division.solders);
       // Transform EstimateSolder[][] into EstimateSolder[]
-      const estimatedSoldersQuadtree = Common.toQuadtreeWithBorders(
+      const estimatedSoldersQuadtree = Functions.toQuadtreeWithBorders(
          Array.prototype.concat.apply([], this.estimatedSolders)
       );
 
@@ -87,7 +86,7 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
    }
 
    public draw() {
-      Common.setColor("rgba(0,0,255,0.5)");
+      Functions.setColor("rgba(0,0,255,0.5)");
 
       if (Keyboard.pressed.w) {
          this.rotateAngle--;
@@ -102,7 +101,7 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
    }
 
    private rotate() {
-      const a = Common.toRad(this.rotateAngle);
+      const a = Functions.toRad(this.rotateAngle);
 
       this.estimatedSolders.forEach((row) => {
          row.forEach((solder: EstimateSolder) => {
