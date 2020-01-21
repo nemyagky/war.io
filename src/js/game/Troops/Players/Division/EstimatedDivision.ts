@@ -1,11 +1,15 @@
 import { EstimateSolder } from "../../../../interfaces/EstimateSolder.interface";
-import { Camera } from "../../../Camera";
+import { Camera } from "../../../Rendering/Camera";
 import { ctx } from "../../../Shared/Ctx";
 import { Cursor } from "../../../Shared/Cursor";
 import { Functions } from "../../../Shared/Functions";
 import { Keyboard } from "../../../Shared/Keyboard";
 import { Division } from "./Division";
 
+// TODO
+// Предусмотреть то, что солдаты могут умереть, пока пользователь водит предполагаемым прямоугольником
+// Предусмотреть то, что когда клиент поднимет курсор и отправит запрос на сервер, солдаты на сервере могут
+// Измениться, из-за чего moveTo может быть задан неверно
 export const EstimatedDivision = new class EstimatedDivisionSingleton {
 
    private division: Division;
@@ -55,34 +59,42 @@ export const EstimatedDivision = new class EstimatedDivisionSingleton {
     * The main idea of the function is to find nearest solder in realSoldersQuadtree and estimatedSoldersQuadtree
     * And than for every nearestRealSolder set move to nearestEstimatedSolder
     */
-   public setMovingCordsForSolders() {
-      const realSoldersQuadtree = Functions.toQuadtreeWithBorders(this.division.solders);
-      // Transform EstimateSolder[][] into EstimateSolder[]
-      const estimatedSoldersQuadtree = Functions.toQuadtreeWithBorders(
-         Array.prototype.concat.apply([], this.estimatedSolders)
-      );
+   public async setMovingCordsForSolders() {
+      return new Promise((resolve) => {
 
-      this.estimatedSolders.forEach((row) => {
-         row.forEach(() => {
-            const nearestRealSolder = realSoldersQuadtree.find(
-               realSoldersQuadtree.left, realSoldersQuadtree.top
-            );
-            const nearestEstimatedSolder = estimatedSoldersQuadtree.find(
-               estimatedSoldersQuadtree.left, estimatedSoldersQuadtree.top
-            );
+         const realSoldersQuadtree = Functions.toQuadtreeWithBorders(this.division.solders);
+         // Transform EstimateSolder[][] into EstimateSolder[]
+         const estimatedSoldersQuadtree = Functions.toQuadtreeWithBorders(
+            Array.prototype.concat.apply([], this.estimatedSolders)
+         );
 
-            nearestRealSolder[2].setMoveTo(
-               nearestEstimatedSolder[2].x + Cursor.x + Camera.x,
-               nearestEstimatedSolder[2].y + Cursor.y + Camera.y
-            );
+         const movingCordsArray = [];
 
-            // Remove quadtree's items to avoid re-finding the same solder
-            realSoldersQuadtree.remove(nearestRealSolder);
-            estimatedSoldersQuadtree.remove(nearestEstimatedSolder);
+         this.estimatedSolders.forEach((row) => {
+            row.forEach(() => {
+               const nearestRealSolder = realSoldersQuadtree.find(
+                  realSoldersQuadtree.left, realSoldersQuadtree.top
+               );
+               const nearestEstimatedSolder = estimatedSoldersQuadtree.find(
+                  estimatedSoldersQuadtree.left, estimatedSoldersQuadtree.top
+               );
+
+               nearestRealSolder[2].setMoveTo(
+                  nearestEstimatedSolder[2].x + Cursor.x + Camera.x,
+                  nearestEstimatedSolder[2].y + Cursor.y + Camera.y
+               );
+
+               movingCordsArray.push([nearestRealSolder[2].moveTo.x, nearestRealSolder[2].moveTo.y]);
+
+               // Remove quadtree's items to avoid re-finding the same solder
+               realSoldersQuadtree.remove(nearestRealSolder);
+               estimatedSoldersQuadtree.remove(nearestEstimatedSolder);
+            });
          });
-      });
 
-      this.estimatedSolders = [];
+         this.estimatedSolders = [];
+         resolve(movingCordsArray);
+      });
    }
 
    public draw() {

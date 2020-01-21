@@ -17,5 +17,5 @@ const Ctx = new class CtxSingleton {
 
 }();
 
-export const canvas = Ctx.canvas;
-export const ctx = Ctx.canvas.getContext("2d");
+export let canvas = Ctx.canvas;
+export let ctx = Ctx.canvas.getContext("2d");

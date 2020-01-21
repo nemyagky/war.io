@@ -1,4 +1,4 @@
-import { ctx } from "./Shared/Ctx";
+import { ctx } from "../Shared/Ctx";
 
 export const Map = new class MapSingleton {
 

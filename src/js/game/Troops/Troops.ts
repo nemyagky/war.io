@@ -1,68 +1,52 @@
-import { Borders } from "../../interfaces/Borders.interface";
-import { Socket } from "./../Shared/Websocket";
-import { Division } from "./Players/Division/Division";
+import { TroopsServerState } from "../../interfaces/server/TroopsServerState.interface";
+import { PlayerServerState } from "./../../interfaces/server/PlayerServerState.interface";
 import { EstimatedDivision } from "./Players/Division/EstimatedDivision";
-import { EnemyPlayer } from "./Players/EnemyPlayer";
 import { MainPlayer } from "./Players/MainPlayer";
-import { PlayerProto } from "./Players/PlayerProto";
+import { Player } from "./Players/Player";
 
 export const Troops = new class TroopsSingleton {
 
-   private players: PlayerProto[] = [];
-
-   constructor() {
-      this.createMainPlayer();
-      this.getEnemiesPlayers();
-   }
+   private mainPlayerId: string;
+   private players: Player[] = [];
 
    public draw() {
-      this.players.forEach((player: PlayerProto) => {
-         player.draw(this.getEnemiesDivisionsForPlayer(player.id));
+      this.players.forEach((player: Player) => {
+         player.draw();
       });
 
       if (EstimatedDivision.isExist()) { EstimatedDivision.draw(); }
    }
 
-   private createMainPlayer() {
-      this.createPlayer(
-         { top: 100, left: 100, right: 300, bottom: 300 },
-         { color: "blue", isMain: true }
-      );
-   }
+   public updateState(troops: TroopsServerState) {
+      troops.players.forEach((statePlayer: PlayerServerState) => {
+         const currentRealPlayer = this.getPlayerById(statePlayer.id);
 
-   private getEnemiesPlayers() {
-      Socket.on("newPlayer", () => {
-         console.log(1);
-      });
-   }
-
-   private createPlayer(borders: Borders, settings: { color: string, isMain: boolean }) {
-      if (settings.isMain) {
-         this.players.push(new MainPlayer({ team: "blue", id: this.players.length - 1 }));
-      } else {
-         this.players.push(new EnemyPlayer({ team: "red", id: this.players.length - 1 }));
-      }
-
-      for (let x = borders.left; x < borders.right; x += 11) {
-         for (let y = borders.top; y < borders.bottom; y += 11) {
-            this.players[this.players.length - 1].addSolder(x, y);
-         }
-      }
-   }
-
-   // Return all divisions, which player id is different from playerId
-   private getEnemiesDivisionsForPlayer(playerId: number): Division[] {
-      const enemiesDivisions: Division[] = [];
-
-      this.players.forEach((player) => {
-         if (player.id !== playerId) {
-            player.divisions.forEach((division: Division) => {
-               enemiesDivisions.push(division);
-            });
+         if (currentRealPlayer) {
+            currentRealPlayer.updateState(statePlayer.divisions);
+         } else {
+            if (this.mainPlayerId === statePlayer.id) { return; }
+            this.players.push(new Player(statePlayer.id, statePlayer.team, statePlayer.divisions));
          }
       });
 
-      return enemiesDivisions;
+      // Удаляем игроков, которые вышли
+      this.players = this.players.filter((realPlayer: Player) => {
+         return troops.players.find((serverPlayer: PlayerServerState) => {
+            return realPlayer.id === serverPlayer.id;
+         });
+      });
+   }
+
+   public createMainPlayer(mainPlayerId: string, mainPlayerTeam: string) {
+      this.mainPlayerId = mainPlayerId;
+
+      this.players.push(new MainPlayer(mainPlayerId, mainPlayerTeam));
+   }
+
+   private getPlayerById(playerId: string) {
+      return this.players.find((player) => {
+         return player.id === playerId;
+      });
    }
 
 }();

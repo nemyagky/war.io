@@ -1,5 +1,5 @@
 import * as d3 from "d3-quadtree";
-import { QuadtreeItem } from "../../interfaces/QuadtreeItem.interface";
+import { QuadtreeItem } from "./../../interfaces/QuadtreeItemInterface";
 import { ctx } from "./Ctx";
 
 export const Functions = new class FunctionsSingleton {
@@ -32,18 +32,14 @@ export const Functions = new class FunctionsSingleton {
     return this.fps;
   }
 
-  public rand(min: number, max: number): number {
-    return Math.floor(min + Math.random() * (max + 1 - min));
+  /** @param a Angle in radians */
+  public toDegrees(a: number): number {
+    return a * 180 / Math.PI;
   }
 
   /** @param a Angle in degrees */
   public toRad(a: number): number {
     return a * Math.PI / 180;
-  }
-
-  /** @param a Angle in radians */
-  public toDegrees(a: number): number {
-    return a * 180 / Math.PI;
   }
 
   /**
@@ -70,29 +66,6 @@ export const Functions = new class FunctionsSingleton {
     }
   }
 
-  /**
-   * @param dot1 {x, y}
-   * @param dot2 {x, y}
-   * @returns dist between 2 dots by Pythagorean theorem
-   */
-  public getDistBetween2dots(dot1: { x: number, y: number }, dot2: { x: number, y: number }): number {
-    const a = dot1[0] - dot2[0];
-    const b = dot1[1] - dot2[1];
-
-    return Math.sqrt(a * a + b * b);
-  }
-
-  // TODO delete this function
-  public toQuadtree(array: QuadtreeItem[]) {
-    const quadtree = d3.quadtree();
-
-    array.forEach((item: QuadtreeItem) => {
-      quadtree.add([item.x, item.y, item]);
-    });
-
-    return quadtree;
-  }
-
   public toQuadtreeWithBorders(array: QuadtreeItem[]) {
     const quadtree = d3.quadtree();
 
@@ -107,14 +80,6 @@ export const Functions = new class FunctionsSingleton {
     });
 
     return quadtree;
-  }
-
-  /**
-   * Transform array of arrays into array [][] => []
-   * @param multidimensionalArray array of arrays
-   */
-  public toOneDimensionalArray(multidimensionalArray: any[][]): [] {
-    return Array.prototype.concat.apply([], multidimensionalArray);
   }
 
 }();

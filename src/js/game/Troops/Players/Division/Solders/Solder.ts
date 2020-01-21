@@ -7,19 +7,20 @@ export class Solder {
    public y: number;
    public w: number = 10;
    public h: number = 10;
-   public team: string;
+   public moveTo: { x: number, y: number };
    private rotate: number;
-   private moveTo: { x: number, y: number };
    private speed: number = 0;
 
-   constructor(x: number, y: number, team: string) {
+   constructor(x: number, y: number, moveToX: number, moveToY: number) {
       this.x = x;
       this.y = y;
-      this.team = team;
+      if (moveToX && moveToY) {
+         this.moveTo.x = moveToX;
+         this.moveTo.y = moveToY;
+      }
    }
 
-   public draw(enemiesSoldersQuadtree, enemiesSoldersLength: number) {
-      Functions.setColor(this.team);
+   public draw() {
       this.move();
 
       Functions.rotateCanvasCtx(this.x, this.y, this.rotate);
