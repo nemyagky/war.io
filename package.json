@@ -1,29 +1,21 @@
 {
   "name": "war.io",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server --open",
     "build": "webpack --mode production"
   },
   "devDependencies": {
-    "@types/socket.io-client": "^1.4.32",
+    "@babel/core": "^7.8.4",
+    "@babel/preset-env": "^7.8.4",
     "awesome-typescript-loader": "^5.2.1",
-    "css-loader": "^3.0.0",
-    "node-sass": "^4.12.0",
-    "sass-loader": "^7.1.0",
-    "style-loader": "^0.23.1",
-    "ts-node": "^8.5.4",
+    "babel-loader": "^8.0.6",
     "tslint": "^5.20.1",
     "typescript": "^3.7.3",
     "webpack": "^4.35.3",
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2"
   },
-  "dependencies": {
-    "@types/shortid": "0.0.29",
-    "d3-quadtree": "^1.0.7",
-    "shortid": "^2.2.15",
-    "socket.io-client": "^2.3.0"
-  }
+  "dependencies": {}
 }

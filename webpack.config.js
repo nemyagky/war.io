@@ -10,16 +10,8 @@ module.exports = {
       rules: [
          {
             test: /\.ts$/,
-            loader: 'awesome-typescript-loader',
+            use: ["awesome-typescript-loader", "babel-loader"],
             exclude: /node_modules/,
-         },
-         {
-            test: /\.scss$/,
-            use: [
-               'style-loader',
-               'css-loader',
-               'sass-loader'
-            ]
          },
       ]
    },
