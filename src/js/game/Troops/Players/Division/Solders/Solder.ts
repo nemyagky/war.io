@@ -1,8 +1,10 @@
 import { ctx } from "../../../../Shared/Ctx";
 import { Functions } from "../../../../Shared/Functions";
 
+// TODO каждый солдат должен иметь ID
 export class Solder {
 
+   private id: number;
    public x: number;
    public y: number;
    public w: number = 10;
@@ -11,13 +13,9 @@ export class Solder {
    private rotate: number;
    private speed: number = 0;
 
-   constructor(x: number, y: number, moveToX: number, moveToY: number) {
+   constructor(x: number, y: number) {
       this.x = x;
       this.y = y;
-      if (moveToX && moveToY) {
-         this.moveTo.x = moveToX;
-         this.moveTo.y = moveToY;
-      }
    }
 
    public draw() {

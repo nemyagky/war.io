@@ -4,10 +4,10 @@ import { Solder } from "./Solders/Solder";
 
 export class Division {
 
-   public id: number;
+   public id: string;
    public solders: Infantryman[] = [];
 
-   constructor(id: number, solders?: SolderServerState[]) {
+   constructor(id: string, solders?: SolderServerState[]) {
       this.id = id;
       this.updateState(solders);
    }
@@ -21,8 +21,10 @@ export class Division {
    private updateState(solders: SolderServerState[]) {
       this.solders = [];
 
+      if (!solders) { return; }
+
       solders.forEach((solder: SolderServerState) => {
-         this.solders.push(new Infantryman(solder[0], solder[1], solder[2], solder[3]));
+         this.solders.push(new Infantryman(solder[0], solder[1]));
       });
    }
 }

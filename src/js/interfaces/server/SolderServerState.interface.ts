@@ -1,1 +1,1 @@
-export type SolderServerState = [number, number, number, number];
+export type SolderServerState = [number, number];

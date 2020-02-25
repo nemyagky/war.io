@@ -1,52 +1,52 @@
 import { TroopsServerState } from "../../interfaces/server/TroopsServerState.interface";
-import { PlayerServerState } from "./../../interfaces/server/PlayerServerState.interface";
+import { InitialPlayer } from "./../../interfaces/server/InitialPlayer.interface";
 import { EstimatedDivision } from "./Players/Division/EstimatedDivision";
 import { MainPlayer } from "./Players/MainPlayer";
 import { Player } from "./Players/Player";
 
-export const Troops = new class TroopsSingleton {
+export const Troops = new (class TroopsSingleton {
+  private players: Player[] = [];
 
-   private mainPlayerId: string;
-   private players: Player[] = [];
+  public draw() {
+    this.players.forEach((player: Player) => {
+      player.draw();
+    });
 
-   public draw() {
-      this.players.forEach((player: Player) => {
-         player.draw();
-      });
+    if (EstimatedDivision.isExist()) {
+      EstimatedDivision.draw();
+    }
+  }
 
-      if (EstimatedDivision.isExist()) { EstimatedDivision.draw(); }
-   }
+  public updateState(troops: TroopsServerState) {
+    this.players.forEach(player => {
+      const similarServerPlayer = troops.players.find(
+        serverPlayer => player.id === serverPlayer.id
+      );
 
-   public updateState(troops: TroopsServerState) {
-      troops.players.forEach((statePlayer: PlayerServerState) => {
-         const currentRealPlayer = this.getPlayerById(statePlayer.id);
+      player.updateState(similarServerPlayer.divisions);
+    });
+  }
 
-         if (currentRealPlayer) {
-            currentRealPlayer.updateState(statePlayer.divisions);
-         } else {
-            if (this.mainPlayerId === statePlayer.id) { return; }
-            this.players.push(new Player(statePlayer.id, statePlayer.team, statePlayer.divisions));
-         }
-      });
+  // Вызывается при открытии страницы. Просто создает массив игроков, их state будет заполнен позже, при updateState
+  public setPlayersAtPageLoad(players: InitialPlayer[]) {
+    players.forEach(serverPlayer => {
+      this.players.push(new Player(serverPlayer.id, serverPlayer.team));
+    });
+  }
 
-      // Удаляем игроков, которые вышли
-      this.players = this.players.filter((realPlayer: Player) => {
-         return troops.players.find((serverPlayer: PlayerServerState) => {
-            return realPlayer.id === serverPlayer.id;
-         });
-      });
-   }
+  public createMainPlayer(mainPlayerId: string, mainPlayerTeam: string) {
+    this.players.push(new MainPlayer(mainPlayerId, mainPlayerTeam));
+  }
 
-   public createMainPlayer(mainPlayerId: string, mainPlayerTeam: string) {
-      this.mainPlayerId = mainPlayerId;
+  public createPlayer(playerId: string, playerTeam: string) {
+    this.players.push(new Player(playerId, playerTeam));
+  }
 
-      this.players.push(new MainPlayer(mainPlayerId, mainPlayerTeam));
-   }
+  public deletePlayer(playerId: string) {
+    this.players = this.players.filter(player => player.id !== playerId);
+  }
 
-   private getPlayerById(playerId: string) {
-      return this.players.find((player) => {
-         return player.id === playerId;
-      });
-   }
-
-}();
+  public getMainPlayer(): any {
+    return this.players[0];
+  }
+})();

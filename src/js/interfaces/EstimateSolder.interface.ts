@@ -1,6 +1,6 @@
 export interface EstimateSolder {
-   x: number;
-   y: number;
-   startX: number;
-   startY: number;
+  x: number;
+  y: number;
+  startX: number;
+  startY: number;
 }

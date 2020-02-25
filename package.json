@@ -21,7 +21,9 @@
     "webpack-dev-server": "^3.7.2"
   },
   "dependencies": {
+    "@types/shortid": "0.0.29",
     "d3-quadtree": "^1.0.7",
+    "shortid": "^2.2.15",
     "socket.io-client": "^2.3.0"
   }
 }

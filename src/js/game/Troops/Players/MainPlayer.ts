@@ -1,28 +1,18 @@
-import { DivisionServerState } from "../../../interfaces/server/DivisionServerState.interface";
-import { Socket } from "../../Shared/Socket";
-import { SoldersMoveToCordsArray } from "./../../../interfaces/SoldersMoveToCordsArray.interface";
-import { EstimatedDivision } from "./Division/EstimatedDivision";
+import { MainPlayerEvents } from "./MainPlayerEvents";
 import { Player } from "./Player";
 
 export class MainPlayer extends Player {
 
-   private chosenDivision: number = 0;
+   public chosenDivisionId: string;
 
-   constructor(id: string, team: string, divisions?: DivisionServerState[]) {
-      super(id, team, divisions);
+   constructor(id: string, team: string) {
+      super(id, team);
 
-      this.initCreatingEstimatedDivisions();
+      MainPlayerEvents.init();
    }
 
-   private initCreatingEstimatedDivisions() {
-      window.addEventListener("mousedown", () => {
-         EstimatedDivision.create(this.divisions[this.chosenDivision]);
-      });
-      window.addEventListener("mouseup", async () => {
-         EstimatedDivision.setMovingCordsForSolders().then((soldersMoveToCordsArray: SoldersMoveToCordsArray) => {
-            Socket.emit("divisionMove", soldersMoveToCordsArray);
-         });
-      });
+   public getDivisionById(divisionId: string) {
+      return this.divisions.find((division) => division.id === divisionId);
    }
 
 }

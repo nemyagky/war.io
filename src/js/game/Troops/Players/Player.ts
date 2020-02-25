@@ -8,11 +8,9 @@ export class Player {
    public divisions: Division[] = [];
    private team: string;
 
-   constructor(id: string, team: string, divisions?: DivisionServerState[]) {
+   constructor(id: string, team: string) {
       this.id = id;
       this.team = team;
-
-      if (divisions) { this.updateState(divisions); }
    }
 
    public draw() {
@@ -24,11 +22,11 @@ export class Player {
    }
 
    public updateState(divisions: DivisionServerState[]) {
-      this.divisions = [];
+      // this.divisions = [];
 
-      divisions.forEach((division, index) => {
-         this.divisions.push(new Division(index, division.solders));
-      });
+      // divisions.forEach((division) => {
+      //    this.divisions.push(new Division(division.id, division.solders));
+      // });
    }
 
 }
