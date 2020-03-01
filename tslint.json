@@ -5,7 +5,10 @@
   "rules": {
     "object-literal-sort-keys": false,
     "interface-name": false,
-    "no-console": false
+    "no-console": false,
+    "trailing-comma": false,
+    "new-parens": false,
+    "member-ordering": false
   },
   "rulesDirectory": []
 }
