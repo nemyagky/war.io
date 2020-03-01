@@ -1,5 +1,20 @@
-export class GameloopSingleton {
+import { FpsMeter } from "./Rendering/FpsMeter";
+import { Renderer } from "./Rendering/Renderer";
+import { Troops } from "./Troops/Troops";
+
+export const Gameloop = new (class GameloopSingleton {
   constructor() {
-    console.log("Когда-нибудь я тебя сделаю...");
+    window.addEventListener("load", this.render.bind(this));
+    Troops.init();
   }
-}
+
+  private render() {
+    requestAnimationFrame(this.render.bind(this));
+
+    FpsMeter.startFrame();
+
+    Renderer.render();
+
+    FpsMeter.endFrame();
+  }
+})();

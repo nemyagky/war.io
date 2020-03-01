@@ -7,10 +7,25 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <title>War.io</title>
+    <style>
+      html,
+      body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+    </style>
   </head>
 
   <body>
-    <canvas class="canvas"></canvas>
     <!-- После сборки путь должен быть заменен на путь до главного файла в папке dist-->
     <script src="../main.js"></script>
   </body>
