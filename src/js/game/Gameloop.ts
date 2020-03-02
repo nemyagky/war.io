@@ -1,18 +1,20 @@
+import { Engine } from "./Rendering/Engine";
 import { FpsMeter } from "./Rendering/FpsMeter";
-import { Renderer } from "./Rendering/Renderer";
+import { Scene } from "./Rendering/Scene";
 import { Troops } from "./Troops/Troops";
 
 export const Gameloop = new (class GameloopSingleton {
   constructor() {
-    window.addEventListener("load", this.render.bind(this));
     Troops.init();
+    Engine.runRenderLoop(this.render);
+
+    window.addEventListener("resize", () => {
+      Engine.resize();
+    });
   }
 
   private render() {
-    requestAnimationFrame(this.render.bind(this));
-
-    Renderer.render();
-
+    Scene.render();
     FpsMeter.update();
   }
 })();
