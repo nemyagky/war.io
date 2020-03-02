@@ -10,11 +10,8 @@ export const Gameloop = new (class GameloopSingleton {
 
   private render() {
     requestAnimationFrame(this.render.bind(this));
-
-    FpsMeter.startFrame();
-
     Renderer.render();
 
-    FpsMeter.endFrame();
+    FpsMeter.update();
   }
 })();
