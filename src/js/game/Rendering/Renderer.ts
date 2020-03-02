@@ -18,6 +18,7 @@ export const Renderer = new (class RendererSingleton {
   }
 
   public render() {
+    console.log(1);
     this.renderer.render(Scene, Camera.getCamera());
   }
 })();

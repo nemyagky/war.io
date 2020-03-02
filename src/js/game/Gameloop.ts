@@ -4,8 +4,8 @@ import { Troops } from "./Troops/Troops";
 
 export const Gameloop = new (class GameloopSingleton {
   constructor() {
-    window.addEventListener("load", this.render.bind(this));
     Troops.init();
+    this.render();
   }
 
   private render() {
