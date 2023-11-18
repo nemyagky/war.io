@@ -7,8 +7,10 @@ export const Troops = new (class TroopsSingleton {
     light.position.z = 5;
     Scene.add(light);
 
-    const countInRow = 45;
+    const countInRow = 100;
     const totalCount = Math.pow(countInRow, 3);
+
+    alert(`Rendering ${totalCount} squares. MacOS M1 Pro: 1 million works fine, 3m ~30 fps`);
 
     const geometry = new THREE.BoxBufferGeometry(1, 1, 1);
     const material = new THREE.MeshPhysicalMaterial({ color: 0xffffff });
